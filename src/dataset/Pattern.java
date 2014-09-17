@@ -5,14 +5,13 @@ import java.util.ArrayList;
 import dataset.classes.IrisClass;
 
 public class Pattern {
-	private int index;
 	private ArrayList<Float> attributes;
 	private IrisClass _class;
 	
-	Pattern(){
+	Pattern(){		
 		this.attributes = new ArrayList<>();
 	}
-	Pattern(ArrayList<Float> attributes, IrisClass _class) {
+	Pattern(ArrayList<Float> attributes, IrisClass _class) {		
 		this.attributes = attributes;
 		this._class = _class;
 	}
@@ -30,12 +29,6 @@ public class Pattern {
 	}
 	public void set_class(IrisClass _class) {
 		this._class = _class;
-	}
-	public int getIndex() {
-		return index;
-	}
-	public void setIndex(int index) {
-		this.index = index;
 	}
 	public void displayPattern() {		
 		System.out.println(attributes +"\t"+_class.name());

@@ -1,7 +1,7 @@
 package dataset.classes;
 
 public enum IrisClass {
-	Iris_setosa(1),	Iris_versicolor(2), Iris_virginica(3);	
+	Iris_setosa(0),	Iris_versicolor(1), Iris_virginica(2);	
 	
 	private int numericClass;	
 	IrisClass(int numericClass) {
