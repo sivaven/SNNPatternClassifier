@@ -12,8 +12,7 @@ public class FrontTest {
 		DataSet dataSet = new IrisDataset();		
 		IrisClass _class = IrisClass.Iris_setosa;
 		float fraction = 0.1f;
-		Map<Integer, Pattern> patternSet = ((IrisDataset)dataSet).samplePatternSetByClass(_class, fraction);
-		System.out.println(patternSet.size());
+		Map<Integer, Pattern> patternSet = ((IrisDataset)dataSet).samplePatternSetByClass(_class, fraction);		
 		dataSet.displayDataSet(patternSet);
 	}
 

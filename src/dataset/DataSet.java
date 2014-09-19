@@ -98,8 +98,7 @@ public class DataSet {
 				samplePatternSetByClass.put(key, value);
 				count++;		
 			}
-		}	
-		System.out.println(samplePatternSetByClass.size());
+		}			
 		return samplePatternSetByClass;
 	}
 }
