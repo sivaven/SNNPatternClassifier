@@ -1,6 +1,7 @@
 package snn;
 
 import java.util.ArrayList;
+import java.util.Random;
 import java.util.StringTokenizer;
 
 import snn.constants.LayerLabel;
@@ -29,6 +30,14 @@ public class SNN {
 			if(label.equals(LayerLabel.OUTPUT)) {
 				layers[i] = new Layer(label, nNeurons[i]);
 			}						
+		}
+	}
+	
+	public void randomizeWeights() {
+		for(Layer layer: this.layers){
+			if(!layer.getLabel().equals(LayerLabel.OUTPUT)) {
+				layer.setRandomWeights();
+			}
 		}
 	}
 	
@@ -111,6 +120,13 @@ class Layer {
 		this.neuronSpikeTimes = neuronSpikeTimes;
 	}
 	
+	void setRandomWeights() {
+		Random rnd = new Random();
+		for(int i=0;i<weightsToNextLayer.length;i++)
+			for(int j=0;j<weightsToNextLayer[i].length;j++) {
+				weightsToNextLayer[i][j] = rnd.nextFloat();
+			}
+	}
 	public void displaySpikeTimes() {
 		System.out.println(this.label.name()+" layer SpikeTimes:");
 		for(SpikeTimes spikeTime: this.neuronSpikeTimes){

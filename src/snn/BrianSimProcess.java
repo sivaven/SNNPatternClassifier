@@ -6,6 +6,8 @@ import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
 
+import snn.constants.LayerLabel;
+
 public class BrianSimProcess {
 	
 	private static final int Py_OP_SpikeTime_idx = 2;
@@ -19,11 +21,29 @@ public class BrianSimProcess {
 		outputFromBrian = new ArrayList<>();
 		this.snn = snn;
 	}
+	
+	private void initializeFromSNN(List<String> command) {
+		//set layer/Neuron
+		for(int n:snn.nNeurons){
+			command.add(""+n);
+		}			
+		//set conn weights
+		for(Layer layer:snn.layers){
+			if(!layer.getLabel().equals(LayerLabel.OUTPUT)){
+				float[][] weights = layer.getWeightsToNextLayer();
+				for(float[] weight: weights)
+					for(float w: weight)
+						command.add(""+w);				
+			}
+		}
+	}
 	public void runBrianSimSNN(){
 		
 		List<String> command = new ArrayList<String>();
 		command.add("python");
 		command.add(pyModule);		
+		
+		initializeFromSNN(command);
 		
 		ProcessBuilder pb = new ProcessBuilder(command);//"python", pyModule );
 		try {
@@ -45,7 +65,7 @@ public class BrianSimProcess {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}	
-		finalizeSNN();
+		finalizeToSNN();
 	}
 	
 	public void displayBrianOutput() {
@@ -63,7 +83,7 @@ public class BrianSimProcess {
 		return olST;		
 	}
 	
-	public void finalizeSNN(){
+	public void finalizeToSNN(){
 		int outputLayer = snn.nNeurons.length-1;
 		SpikeTimes[] neuronSpikeTimes = new SpikeTimes[snn.nNeurons[outputLayer]];
 		String[] olST = getOutputLayerSpikeTimesString();		
@@ -76,8 +96,9 @@ public class BrianSimProcess {
 	public static void main(String[] args) {
 		String pyModule = "C:\\Anaconda\\Lib\\site-packages\\brian\\snnClassifier\\snn.py";
 		//String pyModuleTest = "C:\\Anaconda\\Lib\\site-packages\\brian\\aSamples\\SimulateSNN.py";
-		int[] nNeurons = new int[] {7, 4, 4};		
+		int[] nNeurons = new int[] {48, 10, 3};		
 		SNN snn = new SNN(nNeurons);
+		snn.randomizeWeights();
 		
 		BrianSimProcess bSimProcess = new BrianSimProcess(pyModule, snn);
 		bSimProcess.runBrianSimSNN();
