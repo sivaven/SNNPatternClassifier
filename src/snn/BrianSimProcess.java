@@ -10,11 +10,20 @@ import snn.constants.LayerLabel;
 
 public class BrianSimProcess {
 	
+	public static final String PY_Module = "C:\\Anaconda\\Lib\\site-packages\\brian\\snnClassifier\\snn.py";
 	private static final int Py_OP_SpikeTime_idx = 2;
 	
 	private ArrayList<String> outputFromBrian;	
 	private String pyModule;
 	SNN snn;
+	
+	private boolean debug = false;
+	
+	public BrianSimProcess(SNN snn) {
+		this.pyModule = PY_Module;
+		outputFromBrian = new ArrayList<>();
+		this.snn = snn;
+	}
 	
 	public BrianSimProcess(String pyModule, SNN snn) {
 		this.pyModule = pyModule;
@@ -36,6 +45,17 @@ public class BrianSimProcess {
 						command.add(""+w);				
 			}
 		}
+		// set ip layer spike times
+		//first, set nspikeTimes for each ip neuron
+		SpikeTimes[] neuronSpikeTimes = snn.getLayer(LayerLabel.INPUT).getNeuronSpikeTimes();
+		for(int i=0;i<snn.nNeurons[0];i++){
+			command.add(""+neuronSpikeTimes[i].spikeTimes.size());
+		}
+		//next, add spike times:
+		for(SpikeTimes spikeTimes: neuronSpikeTimes) {
+			for(float st: spikeTimes.spikeTimes)
+				command.add(""+st);
+		}
 	}
 	public void runBrianSimSNN(){
 		
@@ -45,6 +65,8 @@ public class BrianSimProcess {
 		
 		initializeFromSNN(command);
 		
+		if(debug) System.out.println(command);
+			
 		ProcessBuilder pb = new ProcessBuilder(command);//"python", pyModule );
 		try {
 			Process p = pb.start();	
@@ -65,6 +87,7 @@ public class BrianSimProcess {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}	
+		if(!debug)
 		finalizeToSNN();
 	}
 	
@@ -83,30 +106,29 @@ public class BrianSimProcess {
 		return olST;		
 	}
 	
-	public void finalizeToSNN(){
+	private void finalizeToSNN(){
 		int outputLayer = snn.nNeurons.length-1;
 		SpikeTimes[] neuronSpikeTimes = new SpikeTimes[snn.nNeurons[outputLayer]];
 		String[] olST = getOutputLayerSpikeTimesString();		
 		for(int i=0;i<neuronSpikeTimes.length;i++) {
 			neuronSpikeTimes[i] = new SpikeTimes(olST[i]);
 		}				
-		snn.layers[outputLayer].setNeuronSpikeTimes(neuronSpikeTimes );
+		snn.getLayer(LayerLabel.OUTPUT).setNeuronSpikeTimes(neuronSpikeTimes );
 	}
 	
 	public static void main(String[] args) {
-		String pyModule = "C:\\Anaconda\\Lib\\site-packages\\brian\\snnClassifier\\snn.py";
+		
 		//String pyModuleTest = "C:\\Anaconda\\Lib\\site-packages\\brian\\aSamples\\SimulateSNN.py";
-		int[] nNeurons = new int[] {48, 10, 3};		
-		SNN snn = new SNN(nNeurons);
-		snn.randomizeWeights();
 		
-		BrianSimProcess bSimProcess = new BrianSimProcess(pyModule, snn);
-		bSimProcess.runBrianSimSNN();
-		//bSimProcess.displayBrianOutput();
-		
-		
-		int outputLayer = snn.nNeurons.length-1;
-		snn.layers[outputLayer].displaySpikeTimes();
+		//snn.getLayer(LayerLabel.OUTPUT).displaySpikeTimes();
 	}
 
+	
+	public boolean isDebug() {
+		return debug;
+	}
+
+	public void setDebug(boolean debug) {
+		this.debug = debug;
+	}
 }

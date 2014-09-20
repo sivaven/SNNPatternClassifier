@@ -47,7 +47,7 @@ public class IrisDataset extends DataSet{
 		Map<Integer, Pattern> _class2 = new HashMap<>();
 		Map<Integer, Pattern> _class3 = new HashMap<>();
 		
-		Iterator it = this.patternSet.entrySet().iterator();
+		Iterator it = this.getPatternSet().entrySet().iterator();
 	    while (it.hasNext()) {
 	        Map.Entry pairs = (Map.Entry)it.next();
 	        Integer key = (Integer) pairs.getKey();

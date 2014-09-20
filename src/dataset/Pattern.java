@@ -5,8 +5,9 @@ import java.util.ArrayList;
 import dataset.classes.IrisClass;
 
 public class Pattern {
+	
 	private ArrayList<Float> attributes;
-	private IrisClass _class;
+	private IrisClass _class;	
 	
 	Pattern(){		
 		this.attributes = new ArrayList<>();

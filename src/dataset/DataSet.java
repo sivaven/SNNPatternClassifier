@@ -9,12 +9,14 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Random;
-import java.util.Set;
 
 public class DataSet {
 	String filePath = null;
-	Map<Integer, Pattern> patternSet;
+	private Map<Integer, Pattern> patternSet;
 	protected ArrayList<Map<Integer, Pattern>> patternSetByClass;
+	private int nAttr;
+	private float[] patternAttrMin;
+	private float[] patternAttrMax;
 	
 	public DataSet(String filePath) {
 		this.filePath = filePath;
@@ -44,6 +46,28 @@ public class DataSet {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+		nAttr = patternSet.get(0).getAttributes().size();
+		setMinMaxPatternAttributes();
+	}
+	
+	private void setMinMaxPatternAttributes(){
+		patternAttrMin = new float[nAttr];
+		patternAttrMax = new float[patternAttrMin.length];
+		for(int i=0;i<patternAttrMin.length;i++){
+			patternAttrMin[i] = Float.MAX_VALUE;
+			patternAttrMax[i] = -Float.MAX_VALUE;
+        }
+		Iterator it = this.patternSet.entrySet().iterator();
+		while (it.hasNext()) {
+	        Map.Entry pairs = (Map.Entry)it.next();
+	        Pattern pattern = (Pattern) pairs.getValue();
+	        for(int i=0;i<patternAttrMin.length;i++){
+	        	if(pattern.getAttributes().get(i) < patternAttrMin[i])
+	        		patternAttrMin[i] = pattern.getAttributes().get(i);
+	        	if(pattern.getAttributes().get(i) > patternAttrMax[i])
+	        		patternAttrMax[i] = pattern.getAttributes().get(i);
+	        }
+		}	
 	}
 	/*
 	 * must override
@@ -100,5 +124,18 @@ public class DataSet {
 			}
 		}			
 		return samplePatternSetByClass;
+	}
+	
+	public float[] getPatternAttrMin(){
+		return this.patternAttrMin;
+	}
+	public float[] getPatternAttrMax(){
+		return this.patternAttrMax;
+	}
+	public int getnAttr() {
+		return nAttr;
+	}	
+	public Map<Integer, Pattern> getPatternSet(){
+		return this.patternSet;
 	}
 }
