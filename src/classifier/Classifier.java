@@ -1,23 +1,37 @@
 package classifier;
 
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.Map;
+
 import snn.BrianSimProcess;
 import snn.SNN;
 import snn.SpikeTimes;
+import dataset.DataSet;
+import dataset.IrisDataset;
+import dataset.Pattern;
+import encode.Encoder;
 
 public class Classifier {
 
-	private SNN snn;
+	private SNN snn;	
+	private Encoder encoder;
+	
 	private boolean debug = false;
-	public Classifier(int[] arch) {
+	public boolean evalStatDisplay = false;
+	public boolean evalStatDetailDisplay = false;
+	
+	public Classifier(int[] arch, Encoder encoder_) {
 		snn = new SNN(arch);
+		this.encoder = encoder_;
 	}
-	public void randomizeWeights() {
-		snn.randomizeWeights();
+	public void randomizeWeights(int magFactor) {
+		snn.randomizeWeights(magFactor);
 	}
 	public void setWeights(float[] weights){
 		snn.setWeights(weights);
 	}
-	public void setInputLayerSpikeTimes(float[][] spikeTimes) {
+	public void setInputLayerSpikeTimes(SpikeTimes[] spikeTimes) {
 		snn.setInputLayerSpikeTimes(spikeTimes);
 	}
 	public SpikeTimes[] runSNN(){		
@@ -33,22 +47,47 @@ public class Classifier {
 		return this.snn;
 	}
 	
-	public static void main(String[] args) {
-		int[] nNeurons = new int[] {3, 4, 3};
-		float[][] _spikeTimes = new float[][] {{100.0f, 200f, 300f}, {300f, 400f, 500f}, {}};
+	public float evaluate(Map<Integer, Pattern> patternSet){
+		float hit = 0;
+		Iterator it = patternSet.entrySet().iterator();
+		int score = 0;	
+		int itmCnt = 0;
+		double time = System.currentTimeMillis();
+		if(evalStatDisplay) {
+			System.out.println("Eval starting.. with nPattenrs : " +patternSet.size());
+		}
+		while (it.hasNext()) {
+	        Map.Entry pairs = (Map.Entry)it.next();
+	       // Integer key = (Integer) pairs.getKey();
+	        Pattern pattern = (Pattern) pairs.getValue();
+	        int classBySNN = classify(pattern.getAttributes());
+
+			if(evalStatDetailDisplay) {
+				snn.displayOutputLayerSpikeTimes();
+				System.out.println("Actual Class : "+ pattern.get_class().getNumericClass());
+			}
+	        if(pattern.get_class().getNumericClass() == classBySNN){
+	        	score += 1;
+	        }
+	        itmCnt+=1;
+	        
+	        if(evalStatDisplay && itmCnt%1==0) System.out.println("Eval done for nPattenrs : " +itmCnt);
+		}
 		
-		Classifier cl = new Classifier(nNeurons);
-		float[] weights = new float[cl.snn.getNWeights()+1];
-		weights[0] =100f;
-		weights[4] = 100f;
-		cl.setWeights(weights);
-		//cl.randomizeWeights();		
-		cl.setInputLayerSpikeTimes(_spikeTimes);
-		//cl.debug = true;
-		SpikeTimes[] opLayerSpikeTimes = cl.runSNN();
-		for(SpikeTimes spikeTimes: opLayerSpikeTimes)
-			spikeTimes.display();
-	}	
+        if(evalStatDisplay) System.out.println("Eval Completed in : "+(System.currentTimeMillis() -time)/1000+" s.");
+		return (1.0f*score)/(1.0f*patternSet.size());
+	}
+	
+	public int classify(ArrayList<Float> attributes){		
+		setInputLayerSpikeTimes(encoder.encode(attributes, 20));
+		SpikeTimes[] opLayerSpikeTimes = runSNN();
+		return encoder.decode(opLayerSpikeTimes);
+	}
+	
+	public DataSet getEncoderDataSet(){
+		return this.encoder.getDataSet();
+	}
+	
 	public void setDebug(boolean debug) {
 		this.debug = debug;
 	}

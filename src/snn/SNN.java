@@ -1,8 +1,6 @@
 package snn;
 
-import java.util.ArrayList;
 import java.util.Random;
-import java.util.StringTokenizer;
 
 import snn.constants.LayerLabel;
 
@@ -33,10 +31,10 @@ public class SNN {
 		}
 	}
 	
-	public void randomizeWeights() {
+	public void randomizeWeights(int magFactor) {
 		for(Layer layer: this.layers){
 			if(!layer.getLabel().equals(LayerLabel.OUTPUT)) {
-				layer.setRandomWeights();
+				layer.setRandomWeights(magFactor);
 			}
 		}
 	}
@@ -100,8 +98,17 @@ public class SNN {
 		this.layers[0].setNeuronSpikeTimes(spikeTimes);
 	}
 	
+	public void setInputLayerSpikeTimes(SpikeTimes[] spikeTimes) {
+		this.layers[0].setNeuronSpikeTimes(spikeTimes);
+	}
+	
 	public SpikeTimes[] getOutputLayerSpikeTimes(){
 		return this.layers[this.layers.length-1].getNeuronSpikeTimes();
+	}
+	public void displayOutputLayerSpikeTimes(){
+		SpikeTimes[] olST = getOutputLayerSpikeTimes();
+		for(SpikeTimes spikeTime: olST)
+			spikeTime.display();
 	}
 }
 /*
@@ -186,11 +193,11 @@ class Layer {
 		}
 	}
 	
-	void setRandomWeights() {
+	void setRandomWeights(int magFactor) {
 		Random rnd = new Random();
 		for(int i=0;i<weightsToNextLayer.length;i++)
 			for(int j=0;j<weightsToNextLayer[i].length;j++) {
-				weightsToNextLayer[i][j] = rnd.nextFloat();
+				weightsToNextLayer[i][j] = rnd.nextFloat()*magFactor;
 			}
 	}
 	public void displaySpikeTimes() {

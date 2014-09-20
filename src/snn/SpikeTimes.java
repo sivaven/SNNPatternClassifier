@@ -11,6 +11,9 @@ public class SpikeTimes {
 	
 	ArrayList<Float> spikeTimes;
 	
+	public SpikeTimes(){
+		spikeTimes = new ArrayList<>();
+	}
 	public SpikeTimes(ArrayList<Float> spikeTimes){
 		this.spikeTimes = spikeTimes;
 	}
@@ -32,10 +35,16 @@ public class SpikeTimes {
 			spikeTimes.add(Float.parseFloat(token)*1000);
 		}
 	}
+	
+	public void addSpikeTime(Float spikeTime){
+		this.spikeTimes.add(spikeTime);
+	}
 	private String removeStopChars(String str){
 		return str.replace(STOP_CHARS[0], ' ').replace(STOP_CHARS[1], ' ');		
 	}
-	
+	public ArrayList<Float> getSpikeTimes() {
+		return this.spikeTimes;
+	}
 	public void display(){
 		System.out.println(spikeTimes);
 	}

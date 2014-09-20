@@ -70,6 +70,36 @@ public class IrisDataset extends DataSet{
 		return patternSetByClass;
 	}
 	
+	public ArrayList<Map<Integer, Pattern>> setPatternSetByClass(Map<Integer, Pattern> patternSet) {
+		ArrayList<Map<Integer, Pattern>> patternSetByClass = new ArrayList<>();
+		
+		Map<Integer, Pattern> _class1 = new HashMap<>();
+		Map<Integer, Pattern> _class2 = new HashMap<>();
+		Map<Integer, Pattern> _class3 = new HashMap<>();
+		
+		Iterator it = patternSet.entrySet().iterator();
+	    while (it.hasNext()) {
+	        Map.Entry pairs = (Map.Entry)it.next();
+	        Integer key = (Integer) pairs.getKey();
+	        Pattern pattern = (Pattern) pairs.getValue();
+	        
+	        if(pattern.get_class().equals(IrisClass.Iris_setosa)){
+	        	 _class1.put(key, pattern);
+	        }
+	        if(pattern.get_class().equals(IrisClass.Iris_versicolor)){
+	        	 _class2.put(key, pattern);
+	        }
+	        if(pattern.get_class().equals(IrisClass.Iris_virginica)){
+	        	 _class3.put(key, pattern);
+	        }	       
+	    }
+	    patternSetByClass.add(_class1);
+	    patternSetByClass.add(_class2);
+	    patternSetByClass.add(_class3);
+		
+		return patternSetByClass;
+	}
+	
 	public Map<Integer, Pattern> getPatternSetByClass(IrisClass _class) {
 		return patternSetByClass.get(_class.getNumericClass());
 	}	
