@@ -1,6 +1,6 @@
 import java.util.Map;
 
-import training.Evaluator;
+import training.DataSetManager;
 import classifier.Classifier;
 import dataset.DataSet;
 import dataset.IrisDataset;
@@ -15,7 +15,7 @@ public class FrontTest {
 		DataSet dataSet = new IrisDataset();	
 		Encoder encoder = new Encoder(dataSet, 8);	
 		Classifier cl = new Classifier(nNeurons, encoder);
-		Evaluator eval = new Evaluator(cl);
+		DataSetManager eval = new DataSetManager(dataSet);
 		float tSet = 0.1f;
 		float fitSet = 0.4f;
 		eval.setDataSetPartitions(tSet, fitSet);
@@ -52,10 +52,10 @@ public class FrontTest {
 		 */
 		float tSetFrac = 0.1f;  //n=15
 		float fitSetFrac = 0.4f; //n=6
-		Evaluator eval = new Evaluator(cl);
-		eval.setDataSetPartitions(tSetFrac, fitSetFrac);
+		DataSetManager dm = new DataSetManager(dataSet);
+		dm.setDataSetPartitions(tSetFrac, fitSetFrac);
 		
-		float hit = eval.evaluate();
+		float hit = cl.evaluate(dm.sampleFitEvalSet());
 		
 		System.out.println("hit: \t" + hit);
 		

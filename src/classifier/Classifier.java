@@ -8,7 +8,6 @@ import snn.BrianSimProcess;
 import snn.SNN;
 import snn.SpikeTimes;
 import dataset.DataSet;
-import dataset.IrisDataset;
 import dataset.Pattern;
 import encode.Encoder;
 
@@ -29,6 +28,10 @@ public class Classifier {
 		snn.randomizeWeights(magFactor);
 	}
 	public void setWeights(float[] weights){
+		if(snn.getNWeights() != weights.length) {
+			System.out.println("Expected length: "+snn.getNWeights() +"\tReceived: "+weights.length);
+			System.exit(-1);
+		}
 		snn.setWeights(weights);
 	}
 	public void setInputLayerSpikeTimes(SpikeTimes[] spikeTimes) {
