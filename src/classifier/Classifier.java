@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.Map;
 
+import outputwriter.FileUtils;
 import snn.BrianSimProcess;
 import snn.SNN;
 import snn.SpikeTimes;
@@ -73,10 +74,10 @@ public class Classifier {
 	        	score += 1;
 	        }
 	        itmCnt+=1;
-	        
+	        if(itmCnt%5==0) FileUtils.writeEvalStat(""+itmCnt);
 	        if(evalStatDisplay && itmCnt%1==0) System.out.println("Eval done for nPattenrs : " +itmCnt);
 		}
-		
+		FileUtils.writeEvalStat("\n");
         if(evalStatDisplay) System.out.println("Eval Completed in : "+(System.currentTimeMillis() -time)/1000+" s.");
 		return (1.0f*score)/(1.0f*patternSet.size());
 	}

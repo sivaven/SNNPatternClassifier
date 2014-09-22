@@ -30,9 +30,9 @@ public class FileUtils {
 			e.printStackTrace();
 		}
 	}
-	public static void writeEvalStatln(String str){		
+	public static void writeEvalStat(String str){		
 		try {			
-			fw2.write(str+"\n");
+			fw2.write(str+",");
 			fw2.flush();			
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -47,7 +47,7 @@ public class FileUtils {
 	}
 	public static void closeStatFile(){		
 		try {
-			fw2.close();
+			fw2.close();			
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -104,6 +104,12 @@ public class FileUtils {
 			e.printStackTrace();
 		}
 		return parms;
+	}
+	
+	public static void main(String[] args) {
+		FileUtils.writeSummaryln("12");		
+		FileUtils.closeSummaryFile();
+		FileUtils.writeSummaryln("1200");
 	}
 	
 }
