@@ -4,6 +4,8 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 
+import classifier.Classifier;
+import outputwriter.FileUtils;
 import snn.SNN;
 import dataset.DataSet;
 import dataset.IrisDataset;
@@ -28,6 +30,9 @@ public class ECJStarter {
 		dataSetManager = new DataSetManager(dataSet);		
 		dataSetManager.setDataSetPartitions(tSetFrac, fitSetFrac);
 		encoder = new Encoder(dataSet, 8);	
+						
+		FileUtils.writeSummaryln("tSetKeys:"+dataSetManager.getTrainingSet().keySet().toString());
+		FileUtils.writeSummaryln("eSetKeys:"+dataSetManager.getEvaluationSet().keySet().toString());
 		
 		try {	
 			ParameterDatabase parameterDB = new ParameterDatabase(new File(parmsFile));			
@@ -37,10 +42,17 @@ public class ECJStarter {
 			
 			for(int i=0; i<nJobs; i++)				{
 					Output output = Evolve.buildOutput();
-					output.setFilePrefix("output/job."+i+".");
+					String filePrefix = "output/job."; 
+					output.setFilePrefix(filePrefix+i+".");
 					final EvolutionState state = Evolve.initialize(parameterDB, i+1, output );	
-					state.run(EvolutionState.C_STARTED_FRESH);
-				}	    
+					//state.run(EvolutionState.C_STARTED_FRESH);
+					updateSummaryFile(	i, 
+										filePrefix,
+										parameterDB.getInt(new Parameter("pop.subpop.0.species.genome-size"), 
+															new Parameter("pop.subpop.0.species.genome-size"))
+									);
+				}	
+			FileUtils.closeSummaryFile();
 			
 		} catch (FileNotFoundException e) {
 			// TODO Auto-generated catch block
@@ -50,6 +62,17 @@ public class ECJStarter {
 			e.printStackTrace();
 		}
         
+	}
+	
+	private static void updateSummaryFile(int trial, String ecOpFilePrefix,  int nParms) {
+		float[] bestSoln = FileUtils.readBestSolution(ecOpFilePrefix+trial+".full", 6, nParms);		
+		Classifier cl = new Classifier(ECJStarter.nNeurons, 
+	    			ECJStarter.encoder);		        
+	    cl.setWeights(bestSoln);
+	    float tSetAcc = cl.evaluate(dataSetManager.getTrainingSet());
+	    float eSetAcc = cl.evaluate(dataSetManager.getEvaluationSet());
+	   
+	    FileUtils.writeSummaryln(trial+" "+tSetAcc+" "+eSetAcc);
 	}
 }
 
