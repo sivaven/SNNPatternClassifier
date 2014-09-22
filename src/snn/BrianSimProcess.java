@@ -10,7 +10,8 @@ import snn.constants.LayerLabel;
 
 public class BrianSimProcess {
 	
-	public static final String PY_Module = "C:\\Anaconda\\Lib\\site-packages\\brian\\snnClassifier\\snn.py";
+	//public static final String PY_Module = "C:\\Anaconda\\Lib\\site-packages\\brian\\snnClassifier\\snn.py";
+	public static final String PY_Module = "snn.py";
 	private static final int Py_OP_SpikeTime_idx = 2;
 	
 	private ArrayList<String> outputFromBrian;	
