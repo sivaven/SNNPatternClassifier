@@ -23,8 +23,8 @@ public class ECJStarter {
 	
 	public static void main(String[] args) {
 		String parmsFile = "input/ecj.params";
-		float tSetFrac = 0.1f;  //(.1, .4) => n=15, 6
-		float fitSetFrac = 0.4f; 
+		float tSetFrac = 0.5f;  //(.1, .4) => n=15, 6
+		float fitSetFrac = 0.6f; 
 				
 		DataSet dataSet = new IrisDataset();
 		dataSetManager = new DataSetManager(dataSet);		
