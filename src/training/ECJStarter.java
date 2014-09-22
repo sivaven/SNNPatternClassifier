@@ -53,6 +53,7 @@ public class ECJStarter {
 									);
 				}	
 			FileUtils.closeSummaryFile();
+			FileUtils.closeStatFile();
 			
 		} catch (FileNotFoundException e) {
 			// TODO Auto-generated catch block
