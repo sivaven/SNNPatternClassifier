@@ -32,11 +32,11 @@ public class ECProblem extends Problem implements SimpleProblemForm{
 	       
 	        
 	        
-	        cl.evalStatDetailDisplay =false;
+	        cl.evalStatDetailDisplay =true;
 	       
 	        fitness = cl.evaluate(ECJStarter.dataSetManager.sampleFitEvalSet());
 	       
-	        System.out.println("evaluate");
+	       // System.out.println("evaluate");
 	        
 	        if (!(ind2.fitness instanceof SimpleFitness))
 	            state.output.fatal("Whoa!  It's not a SimpleFitness!!!",null);
