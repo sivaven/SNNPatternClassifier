@@ -27,8 +27,9 @@ public class ECProblem extends Problem implements SimpleProblemForm{
 	        Classifier cl = new Classifier(ECJStarter.nNeurons, 
 	    			ECJStarter.encoder);				
 	        
-	        
-	        cl.setWeights(ind2.genome);
+	        System.out.println(ind2.genomeLength());
+	        cl.setWeights(ind2.genome);	
+	        System.out.println("genomCheck");
 	        
 	        
 	        cl.evalStatDetailDisplay =false;
