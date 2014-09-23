@@ -65,7 +65,7 @@ public class Classifier {
 	       // Integer key = (Integer) pairs.getKey();
 	        Pattern pattern = (Pattern) pairs.getValue();
 	        int classBySNN = classify(pattern.getAttributes());
-	        System.out.println(classBySNN);
+	       
 			if(evalStatDetailDisplay) {
 				snn.displayOutputLayerSpikeTimes();
 				System.out.println("Actual Class : "+ pattern.get_class().getNumericClass());
