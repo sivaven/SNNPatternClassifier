@@ -83,7 +83,9 @@ public class Classifier {
 	}
 	
 	public int classify(ArrayList<Float> attributes){		
+		System.out.println("Encoding begins");
 		setInputLayerSpikeTimes(encoder.encode(attributes));
+		System.out.println("Encoded Successful");
 		SpikeTimes[] opLayerSpikeTimes = runSNN();
 		return encoder.decode(opLayerSpikeTimes);
 	}
