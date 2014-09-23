@@ -27,15 +27,17 @@ public class ECProblem extends Problem implements SimpleProblemForm{
 	        Classifier cl = new Classifier(ECJStarter.nNeurons, 
 	    			ECJStarter.encoder);				
 	        
-	        System.out.println(ind2.genomeLength());
+	        //System.out.println(ind2.genomeLength());
 	        cl.setWeights(ind2.genome);	
-	        System.out.println("genomCheck");
+	       
 	        
 	        
 	        cl.evalStatDetailDisplay =false;
 	       
 	        fitness = cl.evaluate(ECJStarter.dataSetManager.sampleFitEvalSet());
 	       
+	        System.out.println("evaluate");
+	        
 	        if (!(ind2.fitness instanceof SimpleFitness))
 	            state.output.fatal("Whoa!  It's not a SimpleFitness!!!",null);
 	        ((SimpleFitness)ind2.fitness).setFitness(state,
