@@ -65,7 +65,7 @@ public class Classifier {
 	       // Integer key = (Integer) pairs.getKey();
 	        Pattern pattern = (Pattern) pairs.getValue();
 	        int classBySNN = classify(pattern.getAttributes());
-
+	        System.out.println(classBySNN);
 			if(evalStatDetailDisplay) {
 				snn.displayOutputLayerSpikeTimes();
 				System.out.println("Actual Class : "+ pattern.get_class().getNumericClass());
@@ -83,9 +83,7 @@ public class Classifier {
 	}
 	
 	public int classify(ArrayList<Float> attributes){		
-		System.out.println("Encoding begins");
-		setInputLayerSpikeTimes(encoder.encode(attributes));
-		System.out.println("Encoded Successful");
+		setInputLayerSpikeTimes(encoder.encode(attributes));		
 		SpikeTimes[] opLayerSpikeTimes = runSNN();
 		return encoder.decode(opLayerSpikeTimes);
 	}

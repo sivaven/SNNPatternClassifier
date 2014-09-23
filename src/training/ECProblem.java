@@ -32,7 +32,7 @@ public class ECProblem extends Problem implements SimpleProblemForm{
 	       
 	        
 	        
-	        cl.evalStatDetailDisplay =false;
+	        cl.evalStatDetailDisplay =true;
 	        
 	        fitness = cl.evaluate(ECJStarter.dataSetManager.sampleFitEvalSet());
 	       
