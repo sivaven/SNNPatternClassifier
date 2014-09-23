@@ -38,3 +38,7 @@ Icon
 *.Full
 *.Stat
 *.sh
+*.class
+*.full
+*.stat
+*.txt
