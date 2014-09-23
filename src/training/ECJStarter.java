@@ -19,7 +19,7 @@ import encode.Encoder;
 public class ECJStarter {
 	public static  DataSetManager dataSetManager;
 	public static Encoder encoder;
-	public static int[] nNeurons = new int[] {32, 4, 3};
+	public static int[] nNeurons = new int[] {32, 10, 3};
 	
 	public static void main(String[] args) {
 		String parmsFile = "input/ecj.params";

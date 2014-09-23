@@ -1,7 +1,7 @@
 from brian import *
 from time import time
 
-dt_ = 0.5
+dt_ = 1.0
 simclock = Clock(dt=dt_*ms)
 monclock = Clock(dt=dt_* ms)
 

@@ -30,18 +30,28 @@ public class Encoder {
 		this(dataset, nRFs, 1.5f);
 	}
 	
-	public SpikeTimes[] encode(ArrayList<Float> attributes, float factor){
+	public SpikeTimes[] encode(ArrayList<Float> attributes){
 		SpikeTimes[] ipLayerSpikeTimes = new SpikeTimes[attributes.size()*this.nRFs];		
 		for(int i=0;i<attributes.size();i++){
 			for(int j=0;j<this.nRFs;j++){
 				SpikeTimes spikeTimes = new SpikeTimes();
-				spikeTimes.addSpikeTime((float)this.rf[i][j].phi(attributes.get(i)) * factor);
+				float spikeTime = getSpikeTimeFromRFCode( this.rf[i][j].phi(attributes.get(i)) );
+				spikeTimes.addSpikeTime(spikeTime);
 				ipLayerSpikeTimes[(i*this.nRFs)+j] = spikeTimes;
 			}		
 		}
 		return ipLayerSpikeTimes;
 	}
-	
+	/*
+	 * rfCode = 1 => spikeTime = 0 (no delay)
+	 * rfCode = 0 => spikeTime = 10
+	 */
+	public float getSpikeTimeFromRFCode(float rfCode){
+		float spikeTime = Math.round((1-rfCode)*10);
+		if(spikeTime > 9) 
+			spikeTime = 0;
+		return spikeTime;
+	}
 	public void displayRFmus(){
 		for(int i=0;i<this.rf.length;i++)
 			{

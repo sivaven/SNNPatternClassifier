@@ -1,5 +1,7 @@
+import java.util.ArrayList;
 import java.util.Map;
 
+import snn.SpikeTimes;
 import training.DataSetManager;
 import classifier.Classifier;
 import dataset.DataSet;
@@ -50,14 +52,20 @@ public class FrontTest {
 		/*
 		 * setup evaluator
 		 */
-		float tSetFrac = 0.1f;  //n=15
+		float tSetFrac = 1.0f;  //n=15
 		float fitSetFrac = 0.4f; //n=6
 		DataSetManager dm = new DataSetManager(dataSet);
 		dm.setDataSetPartitions(tSetFrac, fitSetFrac);
 		
-		float hit = cl.evaluate(dm.sampleFitEvalSet());
+		ArrayList<Float> attributes = dm.getTrainingSet().get(80).getAttributes();
+		SpikeTimes[] spikeTimes = encoder.encode(attributes );
+		for(SpikeTimes spikeTime: spikeTimes)
+			{
+			spikeTime.display();			
+			}
+		//float hit = cl.evaluate(dm.sampleFitEvalSet());
 		
-		System.out.println("hit: \t" + hit);
+		//System.out.println("hit: \t" + hit);
 		
 	}
 }

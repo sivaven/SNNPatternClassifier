@@ -12,7 +12,7 @@ eval		= ec.simple.SimpleEvaluator
 stat		= ec.simple.SimpleStatistics
 exch		= ec.simple.SimpleExchanger
 
-jobs = 1
+jobs = 5
 
 generations		= 100
 quit-on-run-complete	= true
