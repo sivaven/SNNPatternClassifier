@@ -49,7 +49,7 @@ public class Encoder {
 	public float getSpikeTimeFromRFCode(float rfCode){
 		float spikeTime = Math.round((1-rfCode)*10);
 		if(spikeTime > 9) 
-			spikeTime = 0;
+			spikeTime = 100;
 		return spikeTime;
 	}
 	public void displayRFmus(){
