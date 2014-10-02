@@ -41,13 +41,13 @@ pop.subpop.0.species.crossover-type	= one
 base.likelihood = 0.5
 
 pop.subpop.0.species.genome-size	= 0
-pop.subpop.0.species.min-gene = 0
+pop.subpop.0.species.min-gene = -10
 pop.subpop.0.species.max-gene = 10
 pop.subpop.0.species.mutation-type = gauss
 pop.subpop.0.species.mutation-stdev = 1.0					
 pop.subpop.0.species.mutation-prob = 0.1					
 pop.subpop.0.species.out-of-bounds-retries = 0
-pop.subpop.0.species.mutation-bounded = false
+pop.subpop.0.species.mutation-bounded = true
 
 select.tournament.size		= 2
 pop.subpop.0.species.pipe			= ec.vector.breed.VectorMutationPipeline

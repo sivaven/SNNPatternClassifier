@@ -3,7 +3,9 @@ package encode;
 import java.util.ArrayList;
 
 import snn.SpikeTimes;
+import training.DataSetManager;
 import dataset.DataSet;
+import dataset.IrisDataset;
 
 public class Encoder {
 
@@ -89,8 +91,11 @@ public class Encoder {
 		return this.dataSet;
 	}
 	public static void main(String[] args) {
-		// TODO Auto-generated method stub
-
+		DataSet dataSet = new IrisDataset();		
+		Encoder encoder = new Encoder(dataSet, 8);	
+		SpikeTimes[] times = encoder.encode(dataSet.getPatternSet().get(0).getAttributes());
+		for(SpikeTimes st: times)
+			st.display();
 	}
 
 }

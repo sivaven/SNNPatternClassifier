@@ -1,70 +1,52 @@
 package snn;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicLong;
 
 import snn.constants.LayerLabel;
 
 public class BrianSimProcess {
-	
-	//public static final String PY_Module = "C:\\Anaconda\\Lib\\site-packages\\brian\\snnClassifier\\snn.py";
-	public static final String PY_Module = "snn.py";
-	private static final int Py_OP_SpikeTime_idx = 2;
-	
+		
+	private static final int Py_OP_SpikeTime_idx = 2;	
 	private ArrayList<String> outputFromBrian;	
-	private String pyModule;
 	SNN snn;
 	
 	private boolean debug = false;
 	
+	private static AtomicLong ID_COUNTER = new AtomicLong();
+
+	public static String createID()
+	{
+	    return String.valueOf(ID_COUNTER.getAndIncrement());
+	}
+	
 	public BrianSimProcess(SNN snn) {
-		this.pyModule = PY_Module;
 		outputFromBrian = new ArrayList<>();
 		this.snn = snn;
 	}
-	
-	public BrianSimProcess(String pyModule, SNN snn) {
-		this.pyModule = pyModule;
-		outputFromBrian = new ArrayList<>();
-		this.snn = snn;
+			
+	public void runBrianSimSNN(){		
+		int[] nwArch = snn.nNeurons;
+		float[][] ipLW = snn.getLayer(LayerLabel.INPUT).getWeightsToNextLayer();
+		float[][] hLW = snn.getLayer(LayerLabel.HIDDEN).getWeightsToNextLayer();		
+		SpikeTimes[] spikeTimes = snn.getLayer(LayerLabel.INPUT).getNeuronSpikeTimes();		
+		
+		String moduleName = buildPythonModule("1.0", nwArch, ipLW, hLW,  spikeTimes, false);
+		runBrianSimSNN(moduleName);
 	}
 	
-	private void initializeFromSNN(List<String> command) {
-		//set layer/Neuron
-		for(int n:snn.nNeurons){
-			command.add(""+n);
-		}			
-		//set conn weights
-		for(Layer layer:snn.layers){
-			if(!layer.getLabel().equals(LayerLabel.OUTPUT)){
-				float[][] weights = layer.getWeightsToNextLayer();
-				for(float[] weight: weights)
-					for(float w: weight)
-						command.add(""+w);				
-			}
-		}
-		// set ip layer spike times
-		//first, set nspikeTimes for each ip neuron
-		SpikeTimes[] neuronSpikeTimes = snn.getLayer(LayerLabel.INPUT).getNeuronSpikeTimes();
-		for(int i=0;i<snn.nNeurons[0];i++){
-			command.add(""+neuronSpikeTimes[i].spikeTimes.size());
-		}
-		//next, add spike times:
-		for(SpikeTimes spikeTimes: neuronSpikeTimes) {
-			for(float st: spikeTimes.spikeTimes)
-				command.add(""+st);
-		}
-	}
-	public void runBrianSimSNN(){
+	public void runBrianSimSNN(String moduleName){
 		
 		List<String> command = new ArrayList<String>();
 		command.add("python");
-		command.add(pyModule);		
+		command.add(moduleName);		
 		
-		initializeFromSNN(command);
+		//initializeFromSNN(command);
 		
 		if(debug) System.out.println(command);
 			
@@ -85,13 +67,14 @@ public class BrianSimProcess {
 					break;
 				}	
 			}
+			new File(moduleName).delete();
 		} catch (IOException e) {
 			e.printStackTrace();
 		}	
 		if(!debug)
 		finalizeToSNN();
 	}
-	
+
 	public void displayBrianOutput() {
 		System.out.println("BrianSim Output****");
 		for(String str: outputFromBrian) 
@@ -117,11 +100,29 @@ public class BrianSimProcess {
 		snn.getLayer(LayerLabel.OUTPUT).setNeuronSpikeTimes(neuronSpikeTimes );
 	}
 	
+	private String buildPythonModule(String dt,
+			int[] nwArch, float[][] ipLW, float[][] hLW,
+			SpikeTimes[] spikeTimes,
+			boolean doPlot){	
+		
+		String fileName = createID() +".py";		
+		BriansimPythonBuilder builder = new BriansimPythonBuilder(fileName);
+		builder.build(dt, nwArch, ipLW, hLW, spikeTimes, doPlot);		
+		return fileName;
+	}
 	public static void main(String[] args) {
+		BrianSimProcess bsm = new BrianSimProcess(null);
+		SNN snn = new SNN(new int[]{3, 4, 4});
+		snn.randomizeWeights(1);
+		float[][] spikeTimesFloat = new float[][] {{10, 20, 30}, {0, 10}, {}};
+		snn.setInputLayerSpikeTimes(spikeTimesFloat );
+		int[] nwArch = snn.nNeurons;
+		float[][] ipLW = snn.getLayer(LayerLabel.INPUT).getWeightsToNextLayer();
+		float[][] hLW = snn.getLayer(LayerLabel.HIDDEN).getWeightsToNextLayer();		
+		SpikeTimes[] spikeTimes = snn.getLayer(LayerLabel.INPUT).getNeuronSpikeTimes();		
 		
-		//String pyModuleTest = "C:\\Anaconda\\Lib\\site-packages\\brian\\aSamples\\SimulateSNN.py";
-		
-		//snn.getLayer(LayerLabel.OUTPUT).displaySpikeTimes();
+		String moduleName = bsm.buildPythonModule("0.5", nwArch, ipLW, hLW,  spikeTimes, true);
+		System.out.println(bsm.outputFromBrian);
 	}
 
 	
