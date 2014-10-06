@@ -19,10 +19,10 @@ import encode.Encoder;
 public class ECJStarter {
 	public static  DataSetManager dataSetManager;
 	public static Encoder encoder;
-	public static int[] nNeurons = new int[] {32, 15, 3};
+	//public static int[] nNeurons = new int[] {32, 15, 3};
 	
 	public static void main(String[] args) {
-		String parmsFile = "input/ecj.params";
+		String parmsFile = "input/ecj2.params";
 		float tSetFrac = 0.5f;  //(.1, .4) => n=15, 6
 		float fitSetFrac = 0.6f; 
 				
@@ -37,15 +37,15 @@ public class ECJStarter {
 		try {	
 			ParameterDatabase parameterDB = new ParameterDatabase(new File(parmsFile));			
 			int nJobs = parameterDB.getInt(new Parameter("jobs"), new Parameter("jobs"));	
-			parameterDB.set(new Parameter("pop.subpop.0.species.genome-size"), 
-					""+(new SNN(nNeurons).getNWeights()));
+			//parameterDB.set(new Parameter("pop.subpop.0.species.genome-size"), 
+			//		""+(new SNN(nNeurons).getNWeights()));
 			
 			for(int i=0; i<nJobs; i++)				{
 					Output output = Evolve.buildOutput();
 					String filePrefix = "output/job."; 
 					output.setFilePrefix(filePrefix+i+".");
-					final EvolutionState state = Evolve.initialize(parameterDB, i+1, output );	
-					state.run(EvolutionState.C_STARTED_FRESH);
+				//	final EvolutionState state = Evolve.initialize(parameterDB, i+1, output );	
+				//	state.run(EvolutionState.C_STARTED_FRESH);
 					updateSummaryFile(	i, 
 										filePrefix,
 										parameterDB.getInt(new Parameter("pop.subpop.0.species.genome-size"), 
@@ -67,9 +67,16 @@ public class ECJStarter {
 	
 	private static void updateSummaryFile(int trial, String ecOpFilePrefix,  int nParms) {
 		float[] bestSoln = FileUtils.readBestSolution(ecOpFilePrefix+trial+".full", 6, nParms);		
-		Classifier cl = new Classifier(ECJStarter.nNeurons, 
-	    			ECJStarter.encoder);		        
-	    cl.setWeights(bestSoln);
+		Classifier cl = new Classifier(ECJStarter.encoder);	
+		EAGenes genes = new EAGenes(bestSoln);
+		
+		int hiddenN = (int) genes.getGene(0);
+        int[] arch = new int[]{32,hiddenN,hiddenN/4,3};		        
+		float[] cProb = genes.getGenes(1, 7);
+		float[] cW = genes.getGenes(8, 7);
+		SNN snn = new SNN(arch, cProb, cW);
+		cl.setSNN(snn);
+		
 	    float tSetAcc = cl.evaluate(dataSetManager.getTrainingSet());
 	    float eSetAcc = cl.evaluate(dataSetManager.getEvaluationSet());
 	   

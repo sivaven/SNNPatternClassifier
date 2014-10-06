@@ -4,6 +4,7 @@ import java.util.ArrayList;
 
 import snn.SpikeTimes;
 import training.DataSetManager;
+import utils.Utils;
 import dataset.DataSet;
 import dataset.IrisDataset;
 
@@ -78,8 +79,11 @@ public class Encoder {
 		float earliestFiringTime = Float.MAX_VALUE;
 		for(int i=0;i<spikeTimes.length;i++){
 			if(spikeTimes[i]!=null && spikeTimes[i].getSpikeTimes().size()>0){
-				float currentNeuronFirTime = spikeTimes[i].getSpikeTimes().get(0);
-				if(currentNeuronFirTime < earliestFiringTime){
+				float currentNeuronFirTime = spikeTimes[i].getSpikeTimes().get(0);				
+				if(Utils.isCloseEnough(currentNeuronFirTime, earliestFiringTime, 0.5f)){
+					neuronIdx = -1;
+					earliestFiringTime = currentNeuronFirTime;
+				}else if(currentNeuronFirTime < earliestFiringTime){
 					neuronIdx = i;
 					earliestFiringTime = currentNeuronFirTime;
 				}

@@ -1,6 +1,7 @@
 import java.util.ArrayList;
 import java.util.Map;
 
+import snn.SNN;
 import snn.SpikeTimes;
 import training.DataSetManager;
 import classifier.Classifier;
@@ -13,10 +14,17 @@ import encode.Encoder;
 public class FrontTest {
 
 	public static void EvaluatorTest(){
-		int[] nNeurons = new int[] {32, 4, 3};	
+		
 		DataSet dataSet = new IrisDataset();	
 		Encoder encoder = new Encoder(dataSet, 8);	
-		Classifier cl = new Classifier(nNeurons, encoder);
+		Classifier cl = new Classifier(encoder);
+		
+		int[] arch = new int[]{32,800,200,3};		
+		float[] cProb = new float[] {0.8f, 0.2f, 0.05f, 0.02f, 0.01f, 0.01f, 0.01f };
+		float[] cW = new float[] {2, 2, 2, 2, 2, 2, 2};		
+		SNN snn = new SNN(arch, cProb, cW);
+		cl.setSNN(snn);
+		
 		DataSetManager eval = new DataSetManager(dataSet);
 		float tSet = 0.1f;
 		float fitSet = 0.4f;
@@ -34,38 +42,36 @@ public class FrontTest {
 	}
 	public static void main(String[] args) {
 		
-		/*
-		 * setup classifier
-		 */
-		int[] nNeurons = new int[] {32, 4, 3};	
 		DataSet dataSet = new IrisDataset();	
 		Encoder encoder = new Encoder(dataSet, 8);	
+		Classifier cl = new Classifier(encoder);
 		
-		Classifier cl = new Classifier(nNeurons, encoder);			
-		//float[] weights = new float[cl.snn.getNWeights()+1];
-		//weights[0] =10f;
-		//weights[4] = 10f;
-		//cl.setWeights(weights);
-		cl.randomizeWeights(10);
-		cl.evalStatDisplay = true;
-		cl.evalStatDetailDisplay = true;
+		int[] arch = new int[]{32,800,200,3};		
+		float[] cProb = new float[] {0.8f, 0.2f, 0.05f, 0.02f, 0.01f, 0.01f, 0.01f };
+		float[] cW = new float[] {2, 2, 2, 2, 2, 2, 2};		
+		SNN snn = new SNN(arch, cProb, cW);
+		cl.setSNN(snn);
+				
+		cl.evalStatDisplay = false;
+		cl.evalStatDetailDisplay = false;
+		cl.setDebug(false);
 		/*
 		 * setup evaluator
 		 */
-		float tSetFrac = 1.0f;  //n=15
+		float tSetFrac = 0.1f;  //n=15
 		float fitSetFrac = 0.4f; //n=6
 		DataSetManager dm = new DataSetManager(dataSet);
 		dm.setDataSetPartitions(tSetFrac, fitSetFrac);
 		
-		ArrayList<Float> attributes = dm.getTrainingSet().get(80).getAttributes();
-		SpikeTimes[] spikeTimes = encoder.encode(attributes );
-		for(SpikeTimes spikeTime: spikeTimes)
-			{
-			spikeTime.display();			
-			}
-		//float hit = cl.evaluate(dm.sampleFitEvalSet());
+		//ArrayList<Float> attributes = dm.getTrainingSet().get(0).getAttributes();
+		//SpikeTimes[] spikeTimes = encoder.encode(attributes );
+		//cl.setInputLayerSpikeTimes(spikeTimes);
 		
-		//System.out.println("hit: \t" + hit);
+		//System.out.println(cl.classify(attributes));
+		
+		float hit = cl.evaluate(dm.sampleFitEvalSet());
+		
+		System.out.println("hit: \t" + hit);
 		
 	}
 }

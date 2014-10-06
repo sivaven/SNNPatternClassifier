@@ -12,4 +12,10 @@ public class Utils {
 			str+=f;
 		return str;
 	}
+	public static boolean isCloseEnough(float val1, float val2, float threshold){
+		if(Math.abs(val2-val1) <= threshold)
+			return true;
+		else
+			return false;
+	}
 }

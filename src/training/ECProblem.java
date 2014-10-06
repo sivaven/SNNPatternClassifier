@@ -1,5 +1,6 @@
 package training;
 
+import snn.SNN;
 import classifier.Classifier;
 import ec.EvolutionState;
 import ec.Individual;
@@ -23,18 +24,23 @@ public class ECProblem extends Problem implements SimpleProblemForm{
 	       
 	        float fitness = 0;
 	        FloatVectorIndividual ind2 = (FloatVectorIndividual)ind; 
+	        EAGenes genes = new EAGenes(ind2.genome);
 	        
-	        Classifier cl = new Classifier(ECJStarter.nNeurons, 
-	    			ECJStarter.encoder);				
-	        
-	        //System.out.println(ind2.genomeLength());
-	        cl.setWeights(ind2.genome);	
-	       
-	        
-	        
+	        Classifier cl = new Classifier(ECJStarter.encoder);		        
 	        cl.evalStatDetailDisplay =false;
 	       // cl.setDebug(true);
-	        
+	        /*
+	         * 
+	         */
+	        int hiddenN = (int) genes.getGene(0);
+	        int[] arch = new int[]{32,hiddenN,hiddenN/4,3};		        
+			float[] cProb = genes.getGenes(1, 7);
+			float[] cW = genes.getGenes(8, 7);
+			SNN snn = new SNN(arch, cProb, cW);
+			cl.setSNN(snn);
+	        /*
+	         * 
+	         */
 	        fitness = cl.evaluate(ECJStarter.dataSetManager.sampleFitEvalSet());
 	       
 	       // System.out.println("evaluate");

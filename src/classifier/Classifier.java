@@ -25,6 +25,16 @@ public class Classifier {
 		snn = new SNN(arch);
 		this.encoder = encoder_;
 	}
+	public Classifier(SNN snn, Encoder encoder_) {
+		this.snn = snn;
+		this.encoder = encoder_;
+	}
+	
+	public Classifier(Encoder encoder_) {
+		this.snn = null;
+		this.encoder = encoder_;
+	}
+	
 	public void randomizeWeights(int magFactor) {
 		snn.randomizeWeights(magFactor);
 	}
@@ -38,10 +48,19 @@ public class Classifier {
 	public void setInputLayerSpikeTimes(SpikeTimes[] spikeTimes) {
 		snn.setInputLayerSpikeTimes(spikeTimes);
 	}
-	public SpikeTimes[] runSNN(){		
+	public SpikeTimes[] runSNNArch1(){		
 		BrianSimProcess bSimProcess = new BrianSimProcess(snn);
 		bSimProcess.setDebug(debug);
-		bSimProcess.runBrianSimSNN();
+		bSimProcess.runBrianSimSNNArch1();
+		if(debug)
+			bSimProcess.displayBrianOutput();	
+		return snn.getOutputLayerSpikeTimes();
+	}
+	
+	public SpikeTimes[] runSNNArch2(){		
+		BrianSimProcess bSimProcess = new BrianSimProcess(snn);
+		bSimProcess.setDebug(debug);
+		bSimProcess.runBrianSimSNNArch2();
 		if(debug)
 			bSimProcess.displayBrianOutput();	
 		return snn.getOutputLayerSpikeTimes();
@@ -49,6 +68,10 @@ public class Classifier {
 	
 	public SNN getSNN(){
 		return this.snn;
+	}
+	
+	public void setSNN(SNN snn){
+		this.snn = snn;
 	}
 	
 	public float evaluate(Map<Integer, Pattern> patternSet){
@@ -83,10 +106,8 @@ public class Classifier {
 	}
 	
 	public int classify(ArrayList<Float> attributes){		
-		setInputLayerSpikeTimes(encoder.encode(attributes));
-		
-		SpikeTimes[] opLayerSpikeTimes = runSNN();
-		
+		setInputLayerSpikeTimes(encoder.encode(attributes));		
+		SpikeTimes[] opLayerSpikeTimes = runSNNArch2();		
 		return encoder.decode(opLayerSpikeTimes);
 	}
 	

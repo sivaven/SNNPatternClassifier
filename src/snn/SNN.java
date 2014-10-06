@@ -6,8 +6,13 @@ import snn.constants.LayerLabel;
 
 public class SNN {
 	Layer[] layers;
-	int[] nNeurons;
-		
+	private int[] nNeurons;
+	/*
+	 * 2nd architecture	
+	 */
+	private float[] connProb;
+	private float[] connWeight;
+	
 	public SNN(int[] nNeurons) {
 		this.nNeurons = nNeurons;
 		layers = new Layer[nNeurons.length];
@@ -31,6 +36,31 @@ public class SNN {
 		}
 	}
 	
+	public SNN(int[] nNeurons, float[] connProb, float[] connWeight) {
+		this.nNeurons = nNeurons;
+		this.connProb= connProb;
+		this.connWeight = connWeight;
+		
+		layers = new Layer[nNeurons.length];
+		for(int i=0;i<layers.length;i++) {
+			LayerLabel label;
+			if(i==0) {
+				label = LayerLabel.INPUT;
+			}else if(i==layers.length-1) {
+				label = LayerLabel.OUTPUT;
+			}else {
+				label = LayerLabel.HIDDEN;
+			}
+			
+			if(label.equals(LayerLabel.INPUT) || label.equals(LayerLabel.HIDDEN)) {
+				layers[i] = new Layer(label, nNeurons[i], nNeurons[i+1]);
+			}
+			
+			if(label.equals(LayerLabel.OUTPUT)) {
+				layers[i] = new Layer(label, nNeurons[i]);
+			}						
+		}
+	}
 	public void randomizeWeights(int magFactor) {
 		for(Layer layer: this.layers){
 			if(!layer.getLabel().equals(LayerLabel.OUTPUT)) {
@@ -106,9 +136,21 @@ public class SNN {
 		return this.layers[this.layers.length-1].getNeuronSpikeTimes();
 	}
 	public void displayOutputLayerSpikeTimes(){
-		SpikeTimes[] olST = getOutputLayerSpikeTimes();
+		SpikeTimes[] olST = getOutputLayerSpikeTimes();		
 		for(SpikeTimes spikeTime: olST)
 			spikeTime.display();
+	}
+
+	public float[] getConnProb() {
+		return connProb;
+	}
+
+	public float[] getConnWeight() {
+		return connWeight;
+	}
+
+	public int[] getArch() {
+		return this.nNeurons;
 	}
 }
 /*

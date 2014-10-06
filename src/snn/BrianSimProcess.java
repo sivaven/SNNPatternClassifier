@@ -8,6 +8,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicLong;
 
+import dataset.DataSet;
+import dataset.IrisDataset;
+import encode.Encoder;
 import snn.constants.LayerLabel;
 
 public class BrianSimProcess {
@@ -30,13 +33,19 @@ public class BrianSimProcess {
 		this.snn = snn;
 	}
 			
-	public void runBrianSimSNN(){		
-		int[] nwArch = snn.nNeurons;
+	public void runBrianSimSNNArch1(){		
+		int[] nwArch = snn.getArch();
 		float[][] ipLW = snn.getLayer(LayerLabel.INPUT).getWeightsToNextLayer();
 		float[][] hLW = snn.getLayer(LayerLabel.HIDDEN).getWeightsToNextLayer();		
 		SpikeTimes[] spikeTimes = snn.getLayer(LayerLabel.INPUT).getNeuronSpikeTimes();		
 		
 		String moduleName = buildPythonModule("1.0", nwArch, ipLW, hLW,  spikeTimes, false);
+		runBrianSimSNN(moduleName);
+	}
+	
+	public void runBrianSimSNNArch2(){					
+		SpikeTimes[] spikeTimes = snn.getLayer(LayerLabel.INPUT).getNeuronSpikeTimes();			
+		String moduleName = buildPythonModule("1.0", snn.getArch(), snn.getConnProb(), snn.getConnWeight(),  spikeTimes, false);
 		runBrianSimSNN(moduleName);
 	}
 	
@@ -67,7 +76,7 @@ public class BrianSimProcess {
 					break;
 				}	
 			}
-			new File(moduleName).delete();
+			//new File(moduleName).delete();
 		} catch (IOException e) {
 			e.printStackTrace();
 		}	
@@ -91,8 +100,8 @@ public class BrianSimProcess {
 	}
 	
 	private void finalizeToSNN(){
-		int outputLayer = snn.nNeurons.length-1;
-		SpikeTimes[] neuronSpikeTimes = new SpikeTimes[snn.nNeurons[outputLayer]];
+		int outputLayer = snn.getArch().length-1;
+		SpikeTimes[] neuronSpikeTimes = new SpikeTimes[snn.getArch()[outputLayer]];
 		String[] olST = getOutputLayerSpikeTimesString();		
 		for(int i=0;i<neuronSpikeTimes.length;i++) {
 			neuronSpikeTimes[i] = new SpikeTimes(olST[i]);
@@ -110,18 +119,34 @@ public class BrianSimProcess {
 		builder.build(dt, nwArch, ipLW, hLW, spikeTimes, doPlot);		
 		return fileName;
 	}
+	
+	private String buildPythonModule(String dt,
+			int[] nwArch, float[] connProb, float[] connWeights,
+			SpikeTimes[] spikeTimes,
+			boolean doPlot){	
+		
+		String fileName = createID() +".py";		
+		BriansimPythonBuilder builder = new BriansimPythonBuilder(fileName);
+		builder.build(dt, nwArch, connProb, connWeights, spikeTimes, doPlot);		
+		return fileName;
+	}
 	public static void main(String[] args) {
-		BrianSimProcess bsm = new BrianSimProcess(null);
-		SNN snn = new SNN(new int[]{3, 4, 4});
-		snn.randomizeWeights(1);
-		float[][] spikeTimesFloat = new float[][] {{10, 20, 30}, {0, 10}, {}};
-		snn.setInputLayerSpikeTimes(spikeTimesFloat );
-		int[] nwArch = snn.nNeurons;
-		float[][] ipLW = snn.getLayer(LayerLabel.INPUT).getWeightsToNextLayer();
-		float[][] hLW = snn.getLayer(LayerLabel.HIDDEN).getWeightsToNextLayer();		
+		int[] arch = new int[]{32,800,200,3};		
+		float[] cProb = new float[] {0.8f, 0.2f, 0.05f, 0.02f, 0.01f, 0.01f, 0.01f };
+		float[] cW = new float[] {2, 2, 2, 2, 2, 2, 2};
+		
+		SNN snn = new SNN(arch, cProb, cW);
+		
+		DataSet dataSet = new IrisDataset();		
+		Encoder encoder = new Encoder(dataSet, 8);	
+		SpikeTimes[] times = encoder.encode(dataSet.getPatternSet().get(0).getAttributes());				
+		snn.setInputLayerSpikeTimes(times );
+		
+		BrianSimProcess bsm = new BrianSimProcess(snn);		
+		
 		SpikeTimes[] spikeTimes = snn.getLayer(LayerLabel.INPUT).getNeuronSpikeTimes();		
 		
-		String moduleName = bsm.buildPythonModule("0.5", nwArch, ipLW, hLW,  spikeTimes, true);
+		bsm.runBrianSimSNNArch2();
 		System.out.println(bsm.outputFromBrian);
 	}
 
