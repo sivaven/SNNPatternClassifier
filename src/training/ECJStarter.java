@@ -44,8 +44,8 @@ public class ECJStarter {
 					Output output = Evolve.buildOutput();
 					String filePrefix = "output/job."; 
 					output.setFilePrefix(filePrefix+i+".");
-				//	final EvolutionState state = Evolve.initialize(parameterDB, i+1, output );	
-				//	state.run(EvolutionState.C_STARTED_FRESH);
+					final EvolutionState state = Evolve.initialize(parameterDB, i+1, output );	
+					state.run(EvolutionState.C_STARTED_FRESH);
 					updateSummaryFile(	i, 
 										filePrefix,
 										parameterDB.getInt(new Parameter("pop.subpop.0.species.genome-size"), 
