@@ -76,7 +76,7 @@ public class BrianSimProcess {
 					break;
 				}	
 			}
-			//new File(moduleName).delete();
+			new File(moduleName).delete();
 		} catch (IOException e) {
 			e.printStackTrace();
 		}	

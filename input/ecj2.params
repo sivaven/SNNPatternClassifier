@@ -14,7 +14,7 @@ exch		= ec.simple.SimpleExchanger
 
 jobs = 5
 
-generations		= 200
+generations		= 100
 quit-on-run-complete	= true
 checkpoint		= false
 checkpoint-prefix	= ec
