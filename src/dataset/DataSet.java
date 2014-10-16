@@ -5,10 +5,13 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.Random;
+import java.util.TreeMap;
 
 public class DataSet {
 	String filePath = null;
@@ -167,6 +170,28 @@ public class DataSet {
 	        }
 		}	
 		return patternSetExcl;
+	}
+	/*
+	 * intended for presenting both training and evaluation sets together in order, with inset shuffling
+	 * key needs to be changed in order to control the order
+	 */
+	public TreeMap<Integer, Pattern> getOrderedMapWCustomKey(Map<Integer, Pattern> patternSet, int startIdx) {
+		TreeMap<Integer, Pattern> orderedMap = new TreeMap<>();		
+		Iterator it = patternSet.entrySet().iterator();
+		while (it.hasNext()) {
+	        Map.Entry pairs = (Map.Entry)it.next();
+	        Pattern pattern = (Pattern)pairs.getValue();
+	        orderedMap.put(startIdx++, pattern);	        
+		}	
+		return orderedMap;
+	}
+	
+	public void shuffleMap(Map<Integer, Pattern> patternSet){
+		final List<Pattern> patternList = new ArrayList<Pattern>(patternSet.values());
+		Collections.shuffle(patternList);
+		
+		final Iterator<Pattern> vIter = patternList.iterator();
+		for (Integer k : patternSet.keySet()) patternSet.put(k, vIter.next());
 	}
 	public float[] getPatternAttrMin(){
 		return this.patternAttrMin;

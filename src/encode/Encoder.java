@@ -1,12 +1,18 @@
 package encode;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.TreeMap;
 
 import snn.SpikeTimes;
 import training.DataSetManager;
+import training.plasticity.STDP;
 import utils.Utils;
 import dataset.DataSet;
 import dataset.IrisDataset;
+import dataset.Pattern;
 
 public class Encoder {
 
@@ -45,14 +51,40 @@ public class Encoder {
 		}
 		return ipLayerSpikeTimes;
 	}
+	 
+	 
+	 public SpikeTimes[] encode(Map<Integer, Pattern> patternSet, float timeInterval){	
+		 SpikeTimes[] ipLayerSpikeTimes = new SpikeTimes[dataSet.getnAttr()*this.nRFs];		 
+		 float timeOffset = 0;
+		 Iterator it = patternSet.entrySet().iterator();
+		 int patternCnt = 0;
+		 while (it.hasNext()) {
+	        Map.Entry pairs = (Map.Entry)it.next();
+	        Pattern pattern = (Pattern) pairs.getValue();
+	        for(int i=0;i<pattern.getAttributes().size();i++){
+				for(int j=0;j<this.nRFs;j++){
+					if(patternCnt==0) {
+						ipLayerSpikeTimes[(i*this.nRFs)+j] = new SpikeTimes();
+					}
+					float spikeTime = getSpikeTimeFromRFCode( this.rf[i][j].phi(pattern.getAttributes().get(i)) );
+					ipLayerSpikeTimes[(i*this.nRFs)+j].addSpikeTime(spikeTime+timeOffset);					
+				}		
+			} 
+	        timeOffset += timeInterval;
+	        patternCnt+=1;
+	   //     System.out.println(patternCnt+"\t"+timeOffset);
+		 }			
+			
+		return ipLayerSpikeTimes;
+		}
 	/*
 	 * rfCode = 1 => spikeTime = 0 (no delay)
 	 * rfCode = 0 => spikeTime = 10
 	 */
 	public float getSpikeTimeFromRFCode(float rfCode){
-		float spikeTime = Math.round((1-rfCode)*10);
-		if(spikeTime > 9) 
-			spikeTime = 100;
+		float spikeTime = Math.round((1-rfCode)*20);
+		if(spikeTime > 18) 
+			spikeTime = STDP.DURATION+10;
 		return spikeTime;
 	}
 	public void displayRFmus(){
@@ -97,9 +129,25 @@ public class Encoder {
 	public static void main(String[] args) {
 		DataSet dataSet = new IrisDataset();		
 		Encoder encoder = new Encoder(dataSet, 8);	
-		SpikeTimes[] times = encoder.encode(dataSet.getPatternSet().get(0).getAttributes());
-		for(SpikeTimes st: times)
-			st.display();
+		
+		Map<Integer, Pattern> testpattern = new TreeMap<Integer, Pattern>();
+	
+		
+		testpattern.put(3, dataSet.getPatternSet().get(0));
+		testpattern.put(1, dataSet.getPatternSet().get(50));
+		testpattern.put(2, dataSet.getPatternSet().get(20));
+		
+		
+		
+		
+	//	SpikeTimes[] times = encoder.encode(dataSet.getPatternSet().get(20).getAttributes());
+		
+		SpikeTimes[] times = encoder.encode(testpattern, 0);
+		//for(SpikeTimes st: times)
+		//st.display();
+			for(int i=0;i<8;i++)
+				times[i].display();
+			
 	}
 
 }

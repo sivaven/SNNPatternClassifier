@@ -4,8 +4,8 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.Map;
 
+import briansim.BrianSimProcess;
 import outputwriter.FileUtils;
-import snn.BrianSimProcess;
 import snn.SNN;
 import snn.SpikeTimes;
 import dataset.DataSet;
@@ -107,7 +107,7 @@ public class Classifier {
 	
 	public int classify(ArrayList<Float> attributes){		
 		setInputLayerSpikeTimes(encoder.encode(attributes));		
-		SpikeTimes[] opLayerSpikeTimes = runSNNArch2();		
+		SpikeTimes[] opLayerSpikeTimes = runSNNArch1();		
 		return encoder.decode(opLayerSpikeTimes);
 	}
 	

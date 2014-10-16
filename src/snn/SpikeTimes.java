@@ -46,6 +46,13 @@ public class SpikeTimes {
 		return this.spikeTimes;
 	}
 	public void display(){
+		/*for(int i=0;i<spikeTimes.size();i++){
+			if(i==0) System.out.print("[");
+			System.out.print(Math.round(spikeTimes.get(i).floatValue()));
+			if(i!=spikeTimes.size()-1)
+			System.out.print(",");
+		}
+		System.out.print("]\n");*/
 		System.out.println(spikeTimes);
 	}
 }

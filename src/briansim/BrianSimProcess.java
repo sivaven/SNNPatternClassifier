@@ -1,4 +1,4 @@
-package snn;
+package briansim;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -11,6 +11,8 @@ import java.util.concurrent.atomic.AtomicLong;
 import dataset.DataSet;
 import dataset.IrisDataset;
 import encode.Encoder;
+import snn.SNN;
+import snn.SpikeTimes;
 import snn.constants.LayerLabel;
 
 public class BrianSimProcess {
@@ -32,7 +34,17 @@ public class BrianSimProcess {
 		outputFromBrian = new ArrayList<>();
 		this.snn = snn;
 	}
-			
+	
+	public void runBrianSimSNNArch1(boolean plot){		
+		int[] nwArch = snn.getArch();
+		float[][] ipLW = snn.getLayer(LayerLabel.INPUT).getWeightsToNextLayer();
+		float[][] hLW = snn.getLayer(LayerLabel.HIDDEN).getWeightsToNextLayer();		
+		SpikeTimes[] spikeTimes = snn.getLayer(LayerLabel.INPUT).getNeuronSpikeTimes();		
+		
+		String moduleName = buildPythonModule("1.0", nwArch, ipLW, hLW,  spikeTimes, plot);
+		runBrianSimSNN(moduleName);
+	}
+	
 	public void runBrianSimSNNArch1(){		
 		int[] nwArch = snn.getArch();
 		float[][] ipLW = snn.getLayer(LayerLabel.INPUT).getWeightsToNextLayer();
@@ -76,7 +88,7 @@ public class BrianSimProcess {
 					break;
 				}	
 			}
-			new File(moduleName).delete();
+			//new File(moduleName).delete();
 		} catch (IOException e) {
 			e.printStackTrace();
 		}	
@@ -95,7 +107,7 @@ public class BrianSimProcess {
 		String[] olST = new String[outputFromBrian.size() - Py_OP_SpikeTime_idx];
 		for(int i=0; i<olST.length; i++) {
 			olST[i] = outputFromBrian.get(i + Py_OP_SpikeTime_idx);
-		}
+		}		
 		return olST;		
 	}
 	
