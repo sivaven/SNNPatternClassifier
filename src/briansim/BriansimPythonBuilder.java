@@ -4,6 +4,8 @@ import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 import snn.SpikeTimes;
 import training.plasticity.STDP;
@@ -12,108 +14,48 @@ public class BriansimPythonBuilder {
 
 	String fileName;
 	String module;
+	Map<BrianSimParameter, Object> brianSimParms;
+	boolean plot;
 	
-	BriansimPythonBuilder(String fileName) {
+	public BriansimPythonBuilder(String fileName, Map<BrianSimParameter, Object> brianSimParms, boolean plot) {
 		this.fileName = fileName;
+		this.module = "from brian import *\nfrom time import time";	
+		this.brianSimParms = brianSimParms;
+		this.plot = plot;
 	}
-	/*
-	 * 1st nw architecture; weights specified at neuron level
-	 */
-	void build(String dt,
-			int[] nwArch, float[][] ipLW, float[][] hLW,
-			SpikeTimes[] spikeTimes,
-			boolean doPlot){
-		init();
-		setDT(dt);
-		setNwParms(nwArch, ipLW, hLW );
-		setIpLayerSpikeTimes(spikeTimes);
-		setDefaultNeuronParms();
+	public void build() {
+		writeParameters();
+		writeOthers();
+		write();
+	}
+	void writeParameters(){
+		for(BrianSimParameter parm: brianSimParms.keySet()) {
+			writeLnToModule(parm.name()+"="+getStringed(parm));
+		}
+	}
+	
+	void writeOthers(){
+		writeLnToModule("#\n#");
+		writeDefaultNeuronParmsAndEqn();
+		writeSTDPEqn();
+		writeLnToModule("");
+		writeLnToModule("simclock = Clock(dt=dt_*ms)");
+		writeLnToModule("spikeTimes = [(i, t*ms) for i in xrange(len("+BrianSimParameter.spike_times_iter_stdp.toString()+")) for t in "+BrianSimParameter.spike_times_iter_stdp.toString()+"[i]]");
+		writeLayerAndConnections();
 		writeSTDP();
-		writeCoreStatementsArch1();
-		writeRunStatement(doPlot);
-		if(doPlot)
-			writePlotStatementsHiddenScatterOpState();
-		write();
+		writeMonitors();
+		writeRunAndOutputs();
+		writeFeedForwardModule();
 	}
 	
-	void build(String dt,
-			int[] nwArch, float[][] ipLW, float[][] hLW,
-			SpikeTimes[] spikeTimes,
-			float[] neuronParms,
-			boolean doPlot){
-		init();
-		setDT(dt);
-		setNwParms(nwArch, ipLW, hLW );
-		setIpLayerSpikeTimes(spikeTimes);
-		setNeuronParms(neuronParms);
-		writeSTDP();
-		writeCoreStatementsArch1();
-		writeRunStatement(doPlot);
-		if(doPlot)
-			writePlotStatementsHiddenScatterOpState();
-			//writePlotStatementsNodeByNode();
-		write();
-	}
-	
-	/*
-	 * following build is for 2nd nw architecture, the one with recurrent connections, weights and probs defined 
-	 * at group level.
-	 */
-	void build(String dt,
-			int[] nwArch, float[] connProb, float[] connWeight,
-			SpikeTimes[] spikeTimes,
-			boolean doPlot){
-		init();
-		setDT(dt);
-		setNwParms(nwArch, connProb, connWeight);
-		setIpLayerSpikeTimes(spikeTimes);
-		setDefaultNeuronParms();
-		writeCoreStatementsArch2();
-		writeRunStatement(doPlot);
-		if(doPlot)
-			writePlotStatementsHiddenScatterOpState();
-		write();
-	}
-	
-	void init(){
-		module = "from brian import *\nfrom time import time";		
-	}
-	void setDT(String dt){
-		module += "\ndt_ =" + dt;
-		module += "\nsimclock = Clock(dt=dt_*ms)";
-		module += "\nmonclock = Clock(dt=dt_* ms)";
-	}
-	void setNwParms(int[] nwArch, float[][] ipLW, float[][] hLW) {
-		writeLnToModule("n="+convertToString(nwArch));
-		writeLnToModule("maxN=max(n)");
-		
-		writeLnToModule("ipLayerConnWeights="+convertToString(ipLW));
-		writeLnToModule("hdLayerConnWeights="+convertToString(hLW));
-	}
-	
-	void setNwParms(int[] nwArch, float[] connProb, float[] connWeight) {
-		writeLnToModule("n="+convertToString(nwArch));		
-		writeLnToModule("connProb="+convertToString(connProb));
-		writeLnToModule("connWeight="+convertToString(connWeight));
-	}
-	
-	void setIpLayerSpikeTimes(SpikeTimes[] spikeTimes) {				
-		writeLnToModule("spikeTimesIter = "+convertToString(spikeTimes));		
-		writeLnToModule("spikeTimes = [(i, t*ms) for i in xrange(len(spikeTimesIter)) for t in spikeTimesIter[i]]");
-	}
-	
-	void setDefaultNeuronParms() {
+	void writeDefaultNeuronParmsAndEqn() {
 		//DG Hicap parms
-		setNeuronParms(0.571f, 0.130f, -2.714f, 111.506f, 81.2f, -60.5f, -34.8f, 42.4f, -60f, 0, (int)STDP.DURATION);
+		setNeuronParms(0.571f, 0.130f, -2.714f, 111.506f, 81.2f, -60.5f, -34.8f, 42.4f, -60f, 0);
 	}
-	void setNeuronParms(float[] parms) {
-		setNeuronParms(parms[0], parms[1], parms[2], parms[3],
-				parms[4], parms[5], parms[6], parms[7], parms[8],
-				(int)parms[9], (int)parms[10]);
-	}
+	
 	void setNeuronParms(float k, float a, float b, float d, 
 						float C, float vR, float vT, float vP, float c, 
-						int Is, int dur) {
+						int Is) {
 		writeLnToModule("");
 		writeLnToModule("k="+k+"/ms/mV");
 		writeLnToModule("a="+a);
@@ -125,8 +67,6 @@ public class BriansimPythonBuilder {
 		writeLnToModule("vPeak="+vP+"*mV");
 		writeLnToModule("c="+c+"*mV");
 		writeLnToModule("Is="+Is);
-		writeLnToModule("dur="+dur);
-		writeLnToModule("simDur="+dur);
 		
 		writeLnToModule("");		
 		writeLnToModule("model9pEqs= Equations('''");
@@ -138,89 +78,100 @@ public class BriansimPythonBuilder {
 				
 	}
 	
-	void writeSTDP(){
+	void writeSTDPEqn(){
 		writeLnToModule("");
 		writeLnToModule("eqs_stdp='''");
-		writeLnToModule("dA_pre/dt=-A_pre/tau_stdp : 1");
-		writeLnToModule("dA_post/dt=-A_post/tau_stdp : 1");
+		writeLnToModule("dA_pre/dt=-A_pre/tau : 1");
+		writeLnToModule("dA_post/dt=-A_post/tau : 1");
 		writeLnToModule("'''");
 		
 	}
-	void writeCoreStatementsArch1(){
-		writeLnToModule("");
-		writeLnToModule("inputLayer = SpikeGeneratorGroup(n[0], spikeTimes, clock=simclock)");
-		writeLnToModule("hiddenLayer = NeuronGroup(n[1], model=model9pEqs, threshold=\"V>vPeak\", reset=\"V=c;U+=d\", method= \"RK\", clock=simclock)");
-		writeLnToModule("outputLayer = NeuronGroup(n[2], model=model9pEqs, threshold=\"V>vPeak\", reset=\"V=c;U+=d\", method= \"RK\", clock=simclock)");
-		writeLnToModule("");	
-		
-		writeLnToModule("conn1 = Connection(inputLayer, hiddenLayer, 'V', weight="+STDP.conn1_init_weight+"*mV, sparseness="+STDP.conn1Prob+")");
-		writeLnToModule("conn2 = Connection(hiddenLayer, outputLayer, 'V', weight="+STDP.conn2_init_weight+"*mV, sparseness="+STDP.conn2Prob+")");
-		
-		//writeLnToModule("conn1.connect_full(weight = "+STDP.conn1_init_weight+"*mV);");
-		//writeLnToModule("conn2.connect_full(weight = "+STDP.conn2_init_weight+"*mV);");
-		writeLnToModule("tau_stdp = "+STDP.tau_stdp+"*ms");
-		writeLnToModule("gmax = "+STDP.gmax);
-		writeLnToModule("stdp=STDP(conn1,eqs=eqs_stdp,pre='A_pre+="+STDP.weight_step+";w+=A_post',post='A_post+="+STDP.weight_step+";w+=A_pre',wmax=gmax, clock=simclock)");
-	//	writeLnToModule("stdp=STDP(conn2,eqs=eqs_stdp,pre='A_pre+="+STDP.weight_step+";w+=A_post',post='A_post+="+STDP.weight_step+";w+=A_pre',wmax=gmax, clock=simclock)");
-		
-		/*writeLnToModule("for i in xrange(0, n[0]):");
-		writeLnToModule("\tfor j in xrange(0, n[1]):");
-		writeLnToModule("\t\tconn1[i, j] =  ipLayerConnWeights[i][j]*mV");
-		
-		writeLnToModule("for i in xrange(0, n[1]):");
-		writeLnToModule("\tfor j in xrange(0, n[2]):");
-		writeLnToModule("\t\tconn2[i, j] =  hdLayerConnWeights[i][j]*mV");	*/	
-	}
 	
-	void writeCoreStatementsArch2(){
+	void writeLayerAndConnections(){
 		writeLnToModule("");
-		writeLnToModule("inputLayer = SpikeGeneratorGroup(n[0], spikeTimes, clock=simclock)");
-		writeLnToModule("hiddenLayer = NeuronGroup(n[1]+n[2], model=model9pEqs, threshold=\"V>vPeak\", reset=\"V=c;U+=d\", method= \"RK\", clock=simclock)");
-		writeLnToModule("hiddenExc = hiddenLayer.subgroup(n[1])");
-		writeLnToModule("hiddenInh = hiddenLayer.subgroup(n[2])");
-		writeLnToModule("outputLayer = NeuronGroup(n[3], model=model9pEqs, threshold=\"V>vPeak\", reset=\"V=c;U+=d\", method= \"RK\", clock=simclock)");
-		writeLnToModule("output1 = outputLayer.subgroup(1)");
-		writeLnToModule("output2 = outputLayer.subgroup(1)");
-		writeLnToModule("output3 = outputLayer.subgroup(1)");		
-		writeLnToModule("");	
-		
-		writeLnToModule("conn0 = Connection(inputLayer, hiddenExc, 'V', sparseness=connProb[0], weight=connWeight[0]*mV)");
-		writeLnToModule("conn1 = Connection(hiddenExc, hiddenExc, 'V', sparseness=connProb[1], weight=connWeight[1]*mV)");
-		writeLnToModule("conn2 = Connection(hiddenExc, hiddenInh, 'V', sparseness=connProb[2], weight=connWeight[2]*mV)");
-		writeLnToModule("conn3 = Connection(hiddenInh, hiddenExc, 'V', sparseness=connProb[3], weight=-connWeight[3]*mV)");
-		writeLnToModule("conn4 = Connection(hiddenExc, output1, 'V', sparseness=connProb[4], weight=connWeight[4]*mV)");
-		writeLnToModule("conn5 = Connection(hiddenExc, output2, 'V', sparseness=connProb[5], weight=connWeight[5]*mV)");
-		writeLnToModule("conn6 = Connection(hiddenExc, output3, 'V', sparseness=connProb[6], weight=connWeight[6]*mV)");	
-				
-		
-		
-	}
-	
-	void writeRunStatement(boolean plot) {
-		writeLnToModule("SMO = SpikeMonitor(outputLayer)");
-		writeLnToModule("");
-		
-		if(plot){
-			writeLnToModule("SMI = SpikeMonitor(inputLayer)");
-			writeLnToModule("SM = SpikeMonitor(hiddenLayer)");
-			writeLnToModule("VM = StateMonitor(outputLayer, 'V', record=True, clock=monclock) ");
-			writeLnToModule("");
-		}
+		writeLnToModule("inputLayer = SpikeGeneratorGroup("+BrianSimParameter.nw_arch+"[0], spikeTimes, clock=simclock)");
+		writeLnToModule("hiddenLayer = NeuronGroup("+BrianSimParameter.nw_arch+"[1], model=model9pEqs, threshold=\"V>vPeak\", reset=\"V=c;U+=d\", method= \"RK\", clock=simclock)");
+		writeLnToModule("outputLayer = NeuronGroup("+BrianSimParameter.nw_arch+"[2], model=model9pEqs, threshold=\"V>vPeak\", reset=\"V=c;U+=d\", method= \"RK\", clock=simclock)");
 		writeLnToModule("hiddenLayer.V = vR ");
 		writeLnToModule("hiddenLayer.U =0");
 		writeLnToModule("outputLayer.V = vR ");
 		writeLnToModule("outputLayer.U =0");
 		writeLnToModule("");
-		
-		writeLnToModule("t1 = time()");
-		writeLnToModule("run(simDur*ms)");
-		writeLnToModule("t2 = time()");
-		writeLnToModule("print \"Simulation time:\", t2 - t1, \"s\"");
-		
-		writeLnToModule("print \"Output Layer Spike times:\"");
-		writeLnToModule("for i in xrange(0, n[len(n)-1]):");
-		writeLnToModule("\tprint str(SMO[i])");
+			
+		writeLnToModule("conn1 = Connection(inputLayer, hiddenLayer, 'V', weight="+BrianSimParameter.conn1_init_weight+"*mV, sparseness=1)");
+		writeLnToModule("conn2 = Connection(hiddenLayer, outputLayer, 'V', weight="+BrianSimParameter.conn2_init_weight+"*mV, sparseness=1)");		
+	}
+	void writeSTDP(){
+		writeLnToModule("tau = "+BrianSimParameter.stdp_tau+"*ms");
+		writeLnToModule("stdp1=STDP(conn1,eqs=eqs_stdp,"
+				+ "pre='A_pre+="+BrianSimParameter.stdp1_a_step+"*mV;w+=A_post',"
+				+ "post='A_post+="+BrianSimParameter.stdp1_a_step+"*mV;w+=A_pre',wmax="+BrianSimParameter.stdp_gmax+"*mV, clock=simclock)");
+		writeLnToModule("stdp2=STDP(conn2,eqs=eqs_stdp,"
+				+ "pre='A_pre+="+BrianSimParameter.stdp2_a_step+"*mV;w+=A_post',"
+				+ "post='A_post+="+BrianSimParameter.stdp2_a_step+"*mV;w+=A_pre',wmax="+BrianSimParameter.stdp_gmax+"*mV, clock=simclock)");
+	}
+	void writeMonitors(){
+		writeLnToModule("SMO = SpikeMonitor(outputLayer)");
 		writeLnToModule("");
+		if(plot){
+			writeLnToModule("SMI = SpikeMonitor(inputLayer)");
+			writeLnToModule("SM = SpikeMonitor(hiddenLayer)");
+			writeLnToModule("VM = StateMonitor(outputLayer, 'V', record=True, clock=simclock) ");
+			writeLnToModule("");
+		}
+		
+	}
+	void writeRunAndOutputs() {	
+//		writeLnToModule("t1 = time()");
+		writeLnToModule("run("+BrianSimParameter.sim_dur_stdp+"*ms)");
+//		writeLnToModule("t2 = time()");
+/*		writeLnToModule("print \"$"+BrianOutputLabel.sim_time+":\", t2 - t1, \"s\"");		
+		writeLnToModule("print \"$"+BrianOutputLabel.op_layer_spike_times+":\"");
+		writeLnToModule("for i in xrange(0, "+BrianSimParameter.nw_arch+"[len("+BrianSimParameter.nw_arch+")-1]):");
+		writeLnToModule("\tprint \" \".join(str(p) for p in SMO[i])+\",\"");
+		*/
+		writeLnToModule("");
+	}
+	void writeFeedForwardModule() {
+		writeLnToModule("#\n#");
+		writeLnToModule("def feed_forward(spikeTimesIterList, ipPatternIdx):");
+		writeLnToModule("\treinit(states=False)");
+		writeLnToModule("\tspikeTimes = [(i, t*ms) for i in xrange(len(spikeTimesIterList)) for t in spikeTimesIterList[i]]");
+		writeLnToModule("\tinputLayer.spiketimes=spikeTimes");
+		writeLnToModule("\tt1 = time()");
+		writeLnToModule("\trun("+BrianSimParameter.sim_dur_ff+"*ms)");
+		writeLnToModule("\tt2 = time()");
+		writeLnToModule("\tprint \"#$"+BrianOutputLabel.ip_pattern_idx+":\", ipPatternIdx");
+		writeLnToModule("\tprint \"$"+BrianOutputLabel.sim_time+":\", t2 - t1, \"s\"");	
+		writeLnToModule("\tprint \"$"+BrianOutputLabel.op_layer_spike_times+":\"");
+		writeLnToModule("\tfor i in xrange(0, "+BrianSimParameter.nw_arch+"[len("+BrianSimParameter.nw_arch+")-1]):");
+		writeLnToModule("\t\tprint \" \".join(str(p) for p in SMO[i])+\",\"");
+		writeLnToModule("");
+		if(this.plot) {
+			writeLnToModule("\tcolors=[0,0,0]");
+			writeLnToModule("\tsubplot(311)");
+			writeLnToModule("\traster_plot(SMI, title='Input Layer')");
+			writeLnToModule("\taxis([0, "+BrianSimParameter.sim_dur_ff+", 0, "+BrianSimParameter.nw_arch+"[0]])");
+			
+			writeLnToModule("\tsubplot(312)");
+			writeLnToModule("\traster_plot(SM, title='Hidden Layer')");
+			writeLnToModule("\taxis([0, "+BrianSimParameter.sim_dur_ff+", 0, "+BrianSimParameter.nw_arch+"[1]])");
+			
+			writeLnToModule("\tsubplot(313)");
+			writeLnToModule("\traster_plot(SMO, title='Output Layer')");
+			writeLnToModule("\taxis([0, "+BrianSimParameter.sim_dur_ff+", 0, "+BrianSimParameter.nw_arch+"[2]])");
+			writeLnToModule("\tshow()");
+		}
+		writeLnToModule("");
+		writeLnToModule("stdp1 = None\nstdp2=None");
+		writeLnToModule("hiddenLayer.V = vR ");
+		writeLnToModule("hiddenLayer.U =0");
+		writeLnToModule("outputLayer.V = vR ");
+		writeLnToModule("outputLayer.U =0");
+		writeLnToModule("for i in xrange(0, len("+BrianSimParameter.spike_times_iter_ff3d+")):");
+		writeLnToModule("\tfeed_forward(spikeTimesIterList = "+BrianSimParameter.spike_times_iter_ff3d+"[i]"
+				+ ", ipPatternIdx = "+BrianSimParameter.ip_pattern_idx+"[i])");
+		writeLnToModule("");		
 	}
 	void writePlotStatementsNodeByNode(){
 		writeLnToModule("ipLayerV = [[vR for i in arange(0,simDur,dt_)] for i in xrange(n[0])]  ");
@@ -335,9 +286,59 @@ public class BriansimPythonBuilder {
 		str+="]";
 		return str;
 	}
+	String convertToString(SpikeTimes[][] array) {
+		String str = "[";		
+		for(int i=0; i<array.length; i++) {
+			if(i>0) str+=",";
+			str+=convertToString(array[i]);
+		}
+		str+="]";
+		return str;
+	}
+	String getStringed(BrianSimParameter parm) {
+		Object obj = brianSimParms.get(parm);
+		if(obj instanceof Float){
+			return ((Float)obj).toString();
+		}
+		if(obj instanceof int[]){
+			return convertToString((int[])obj);
+		}
+		if(obj instanceof float[]){
+			return convertToString((float[])obj);
+		}
+		if(obj instanceof ArrayList){
+			return convertToString((ArrayList<Float>)obj);
+		}
+		if(obj instanceof float[][]){
+			return convertToString((float[][])obj);
+		}
+		if(obj instanceof SpikeTimes[]){
+			return convertToString((SpikeTimes[])obj);
+		}
+		if(obj instanceof SpikeTimes[][]){
+			return convertToString((SpikeTimes[][])obj);
+		}
+		System.out.println("No object instances matched!! BrianSimPythonBuilder.java");
+		return null;
+	}
 	public static void main(String[] args) {
-		// TODO Auto-generated method stub
-
+		Map<BrianSimParameter, Object> parms = new HashMap<BrianSimParameter, Object>();
+		parms.put(BrianSimParameter.dt_, 1.0f);
+		parms.put(BrianSimParameter.nw_arch, new int[]{32, 20, 3});
+		parms.put(BrianSimParameter.sim_dur_stdp, 500f);
+		parms.put(BrianSimParameter.sim_dur_ff, 500f);
+		parms.put(BrianSimParameter.conn1_init_weight, 3.0f);
+		parms.put(BrianSimParameter.conn2_init_weight, 5.0f);
+		parms.put(BrianSimParameter.stdp1_a_step, 1.0f);
+		parms.put(BrianSimParameter.stdp2_a_step, 1.0f);
+		parms.put(BrianSimParameter.stdp_tau, 10f);
+		parms.put(BrianSimParameter.stdp_gmax, 10000.0f);
+		parms.put(BrianSimParameter.spike_times_iter_stdp, new SpikeTimes[]{});
+		parms.put(BrianSimParameter.spike_times_iter_ff3d, new SpikeTimes[][]{});
+		
+		BriansimPythonBuilder builder = new BriansimPythonBuilder("testing.py", parms, false);
+		builder.build();
+		builder.write();
 	}
 
 }

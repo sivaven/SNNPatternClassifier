@@ -119,5 +119,5 @@ public class BrianSimOutput {
 }
 
 enum BrianOutputLabel {
-	sim_time, op_layer_spike_times, conn_weight_matrix
+	sim_time, op_layer_spike_times, ip_pattern_idx
 }

@@ -1,10 +1,14 @@
 package training.plasticity;
 
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
+import java.util.Set;
 import java.util.TreeMap;
 
+import briansim.BrianSimParameter;
 import briansim.BrianSimProcess;
+import briansim.BriansimPythonBuilder;
 import snn.SNN;
 import snn.SpikeTimes;
 import training.DataSetManager;
@@ -43,12 +47,42 @@ public class STDP {
 		DURATION = N_INPUT_PATTERNS * TIME_INTERVAL_BW_IP_PATTERNS;
 		
 		Encoder encoder = new Encoder(dataSet, 8);
-		SpikeTimes[] ipLayerSpikeTimes = encoder.encode(sampleTrainingSet, TIME_INTERVAL_BW_IP_PATTERNS);
+		SpikeTimes[] stdpSpikeTimes = encoder.encode(sampleTrainingSet, TIME_INTERVAL_BW_IP_PATTERNS);
+		SpikeTimes[][] ffSpikeTimes = new SpikeTimes[sampleEvalSet.size()][];
+		int[] ipPatternIdx = new int[sampleEvalSet.size()];
+		
+		Iterator it = sampleEvalSet.entrySet().iterator();
+		int i=0;
+		while (it.hasNext()) {
+	        Map.Entry pairs = (Map.Entry)it.next();
+	        Integer key = (Integer) pairs.getKey();
+	        Pattern pattern = (Pattern) pairs.getValue();	       
+	        ffSpikeTimes[i] = encoder.encode(pattern.getAttributes());
+	        ipPatternIdx[i++] = key;
+		}		
 		
 		int[] nNeurons = new int[] {32, 20, 3};
-		SNN snn = new SNN(nNeurons);
-		snn.setInputLayerSpikeTimes(ipLayerSpikeTimes);		
-		BrianSimProcess bsm = new BrianSimProcess(snn);
+		
+		
+		Map<BrianSimParameter, Object> parms = new HashMap<BrianSimParameter, Object>();
+		parms.put(BrianSimParameter.dt_, 1.0f);
+		parms.put(BrianSimParameter.nw_arch, nNeurons);
+		parms.put(BrianSimParameter.sim_dur_stdp, DURATION);
+		parms.put(BrianSimParameter.sim_dur_ff, 500f);
+		parms.put(BrianSimParameter.conn1_init_weight, 3.0f);
+		parms.put(BrianSimParameter.conn2_init_weight, 5.0f);
+		parms.put(BrianSimParameter.stdp1_a_step, 0.1f);
+		parms.put(BrianSimParameter.stdp2_a_step, 0.1f);
+		parms.put(BrianSimParameter.stdp_tau, 10f);
+		parms.put(BrianSimParameter.stdp_gmax, 100.0f);
+		parms.put(BrianSimParameter.spike_times_iter_stdp, stdpSpikeTimes);
+		parms.put(BrianSimParameter.spike_times_iter_ff3d, ffSpikeTimes);
+		parms.put(BrianSimParameter.ip_pattern_idx, ipPatternIdx);
+		
+		BriansimPythonBuilder builder = new BriansimPythonBuilder("testing.py", parms, true);
+		builder.build();
+		
+	/*	BrianSimProcess bsm = new BrianSimProcess(snn);
 		double time = System.currentTimeMillis();
 		bsm.runBrianSimSNNArch1(true);
 		bsm.displayBrianOutput();
@@ -63,7 +97,7 @@ public class STDP {
 		time = System.currentTimeMillis() - time;
 		System.out.println("Time taken for "+DURATION+" ms Sim .\t"+time/1000);
 		
-		System.out.println("Hits.\t"+hits);
+		System.out.println("Hits.\t"+hits);*/
 	}
 
 	public static void run1(){
