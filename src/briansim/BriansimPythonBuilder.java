@@ -14,10 +14,10 @@ public class BriansimPythonBuilder {
 
 	String fileName;
 	String module;
-	Map<BrianSimParameter, Object> brianSimParms;
+	Map<BrianSimParameterLabel, Object> brianSimParms;
 	boolean plot;
 	
-	public BriansimPythonBuilder(String fileName, Map<BrianSimParameter, Object> brianSimParms, boolean plot) {
+	public BriansimPythonBuilder(String fileName, Map<BrianSimParameterLabel, Object> brianSimParms, boolean plot) {
 		this.fileName = fileName;
 		this.module = "from brian import *\nfrom time import time";	
 		this.brianSimParms = brianSimParms;
@@ -29,7 +29,7 @@ public class BriansimPythonBuilder {
 		write();
 	}
 	void writeParameters(){
-		for(BrianSimParameter parm: brianSimParms.keySet()) {
+		for(BrianSimParameterLabel parm: brianSimParms.keySet()) {
 			writeLnToModule(parm.name()+"="+getStringed(parm));
 		}
 	}
@@ -40,7 +40,7 @@ public class BriansimPythonBuilder {
 		writeSTDPEqn();
 		writeLnToModule("");
 		writeLnToModule("simclock = Clock(dt=dt_*ms)");
-		writeLnToModule("spikeTimes = [(i, t*ms) for i in xrange(len("+BrianSimParameter.spike_times_iter_stdp.toString()+")) for t in "+BrianSimParameter.spike_times_iter_stdp.toString()+"[i]]");
+		writeLnToModule("spikeTimes = [(i, t*ms) for i in xrange(len("+BrianSimParameterLabel.spike_times_iter_stdp.toString()+")) for t in "+BrianSimParameterLabel.spike_times_iter_stdp.toString()+"[i]]");
 		writeLayerAndConnections();
 		writeSTDP();
 		writeMonitors();
@@ -89,26 +89,26 @@ public class BriansimPythonBuilder {
 	
 	void writeLayerAndConnections(){
 		writeLnToModule("");
-		writeLnToModule("inputLayer = SpikeGeneratorGroup("+BrianSimParameter.nw_arch+"[0], spikeTimes, clock=simclock)");
-		writeLnToModule("hiddenLayer = NeuronGroup("+BrianSimParameter.nw_arch+"[1], model=model9pEqs, threshold=\"V>vPeak\", reset=\"V=c;U+=d\", method= \"RK\", clock=simclock)");
-		writeLnToModule("outputLayer = NeuronGroup("+BrianSimParameter.nw_arch+"[2], model=model9pEqs, threshold=\"V>vPeak\", reset=\"V=c;U+=d\", method= \"RK\", clock=simclock)");
+		writeLnToModule("inputLayer = SpikeGeneratorGroup("+BrianSimParameterLabel.nw_arch+"[0], spikeTimes, clock=simclock)");
+		writeLnToModule("hiddenLayer = NeuronGroup("+BrianSimParameterLabel.nw_arch+"[1], model=model9pEqs, threshold=\"V>vPeak\", reset=\"V=c;U+=d\", method= \"RK\", clock=simclock)");
+		writeLnToModule("outputLayer = NeuronGroup("+BrianSimParameterLabel.nw_arch+"[2], model=model9pEqs, threshold=\"V>vPeak\", reset=\"V=c;U+=d\", method= \"RK\", clock=simclock)");
 		writeLnToModule("hiddenLayer.V = vR ");
 		writeLnToModule("hiddenLayer.U =0");
 		writeLnToModule("outputLayer.V = vR ");
 		writeLnToModule("outputLayer.U =0");
 		writeLnToModule("");
 			
-		writeLnToModule("conn1 = Connection(inputLayer, hiddenLayer, 'V', weight="+BrianSimParameter.conn1_init_weight+"*mV, sparseness=1)");
-		writeLnToModule("conn2 = Connection(hiddenLayer, outputLayer, 'V', weight="+BrianSimParameter.conn2_init_weight+"*mV, sparseness=1)");		
+		writeLnToModule("conn1 = Connection(inputLayer, hiddenLayer, 'V', weight="+BrianSimParameterLabel.conn1_init_weight+"*mV, sparseness=1)");
+		writeLnToModule("conn2 = Connection(hiddenLayer, outputLayer, 'V', weight="+BrianSimParameterLabel.conn2_init_weight+"*mV, sparseness=1)");		
 	}
 	void writeSTDP(){
-		writeLnToModule("tau = "+BrianSimParameter.stdp_tau+"*ms");
+		writeLnToModule("tau = "+BrianSimParameterLabel.stdp_tau+"*ms");
 		writeLnToModule("stdp1=STDP(conn1,eqs=eqs_stdp,"
-				+ "pre='A_pre+="+BrianSimParameter.stdp1_a_step+"*mV;w+=A_post',"
-				+ "post='A_post+="+BrianSimParameter.stdp1_a_step+"*mV;w+=A_pre',wmax="+BrianSimParameter.stdp_gmax+"*mV, clock=simclock)");
+				+ "pre='A_pre+="+BrianSimParameterLabel.stdp1_a_step+"*mV;w+=A_post',"
+				+ "post='A_post+="+BrianSimParameterLabel.stdp1_a_step+"*mV;w+=A_pre',wmax="+BrianSimParameterLabel.stdp_gmax+"*mV, clock=simclock)");
 		writeLnToModule("stdp2=STDP(conn2,eqs=eqs_stdp,"
-				+ "pre='A_pre+="+BrianSimParameter.stdp2_a_step+"*mV;w+=A_post',"
-				+ "post='A_post+="+BrianSimParameter.stdp2_a_step+"*mV;w+=A_pre',wmax="+BrianSimParameter.stdp_gmax+"*mV, clock=simclock)");
+				+ "pre='A_pre+="+BrianSimParameterLabel.stdp2_a_step+"*mV;w+=A_post',"
+				+ "post='A_post+="+BrianSimParameterLabel.stdp2_a_step+"*mV;w+=A_pre',wmax="+BrianSimParameterLabel.stdp_gmax+"*mV, clock=simclock)");
 	}
 	void writeMonitors(){
 		writeLnToModule("SMO = SpikeMonitor(outputLayer)");
@@ -123,7 +123,7 @@ public class BriansimPythonBuilder {
 	}
 	void writeRunAndOutputs() {	
 //		writeLnToModule("t1 = time()");
-		writeLnToModule("run("+BrianSimParameter.sim_dur_stdp+"*ms)");
+		writeLnToModule("run("+BrianSimParameterLabel.sim_dur_stdp+"*ms)");
 //		writeLnToModule("t2 = time()");
 /*		writeLnToModule("print \"$"+BrianOutputLabel.sim_time+":\", t2 - t1, \"s\"");		
 		writeLnToModule("print \"$"+BrianOutputLabel.op_layer_spike_times+":\"");
@@ -139,27 +139,27 @@ public class BriansimPythonBuilder {
 		writeLnToModule("\tspikeTimes = [(i, t*ms) for i in xrange(len(spikeTimesIterList)) for t in spikeTimesIterList[i]]");
 		writeLnToModule("\tinputLayer.spiketimes=spikeTimes");
 		writeLnToModule("\tt1 = time()");
-		writeLnToModule("\trun("+BrianSimParameter.sim_dur_ff+"*ms)");
+		writeLnToModule("\trun("+BrianSimParameterLabel.sim_dur_ff+"*ms)");
 		writeLnToModule("\tt2 = time()");
 		writeLnToModule("\tprint \"#$"+BrianOutputLabel.ip_pattern_idx+":\", ipPatternIdx");
 		writeLnToModule("\tprint \"$"+BrianOutputLabel.sim_time+":\", t2 - t1, \"s\"");	
 		writeLnToModule("\tprint \"$"+BrianOutputLabel.op_layer_spike_times+":\"");
-		writeLnToModule("\tfor i in xrange(0, "+BrianSimParameter.nw_arch+"[len("+BrianSimParameter.nw_arch+")-1]):");
+		writeLnToModule("\tfor i in xrange(0, "+BrianSimParameterLabel.nw_arch+"[len("+BrianSimParameterLabel.nw_arch+")-1]):");
 		writeLnToModule("\t\tprint \" \".join(str(p) for p in SMO[i])+\",\"");
 		writeLnToModule("");
 		if(this.plot) {
 			writeLnToModule("\tcolors=[0,0,0]");
 			writeLnToModule("\tsubplot(311)");
 			writeLnToModule("\traster_plot(SMI, title='Input Layer')");
-			writeLnToModule("\taxis([0, "+BrianSimParameter.sim_dur_ff+", 0, "+BrianSimParameter.nw_arch+"[0]])");
+			writeLnToModule("\taxis([0, "+BrianSimParameterLabel.sim_dur_ff+", 0, "+BrianSimParameterLabel.nw_arch+"[0]])");
 			
 			writeLnToModule("\tsubplot(312)");
 			writeLnToModule("\traster_plot(SM, title='Hidden Layer')");
-			writeLnToModule("\taxis([0, "+BrianSimParameter.sim_dur_ff+", 0, "+BrianSimParameter.nw_arch+"[1]])");
+			writeLnToModule("\taxis([0, "+BrianSimParameterLabel.sim_dur_ff+", 0, "+BrianSimParameterLabel.nw_arch+"[1]])");
 			
 			writeLnToModule("\tsubplot(313)");
 			writeLnToModule("\traster_plot(SMO, title='Output Layer')");
-			writeLnToModule("\taxis([0, "+BrianSimParameter.sim_dur_ff+", 0, "+BrianSimParameter.nw_arch+"[2]])");
+			writeLnToModule("\taxis([0, "+BrianSimParameterLabel.sim_dur_ff+", 0, "+BrianSimParameterLabel.nw_arch+"[2]])");
 			writeLnToModule("\tshow()");
 		}
 		writeLnToModule("");
@@ -168,9 +168,9 @@ public class BriansimPythonBuilder {
 		writeLnToModule("hiddenLayer.U =0");
 		writeLnToModule("outputLayer.V = vR ");
 		writeLnToModule("outputLayer.U =0");
-		writeLnToModule("for i in xrange(0, len("+BrianSimParameter.spike_times_iter_ff3d+")):");
-		writeLnToModule("\tfeed_forward(spikeTimesIterList = "+BrianSimParameter.spike_times_iter_ff3d+"[i]"
-				+ ", ipPatternIdx = "+BrianSimParameter.ip_pattern_idx+"[i])");
+		writeLnToModule("for i in xrange(0, len("+BrianSimParameterLabel.spike_times_iter_ff3d+")):");
+		writeLnToModule("\tfeed_forward(spikeTimesIterList = "+BrianSimParameterLabel.spike_times_iter_ff3d+"[i]"
+				+ ", ipPatternIdx = "+BrianSimParameterLabel.ip_pattern_idx+"[i])");
 		writeLnToModule("");		
 	}
 	void writePlotStatementsNodeByNode(){
@@ -295,7 +295,7 @@ public class BriansimPythonBuilder {
 		str+="]";
 		return str;
 	}
-	String getStringed(BrianSimParameter parm) {
+	String getStringed(BrianSimParameterLabel parm) {
 		Object obj = brianSimParms.get(parm);
 		if(obj instanceof Float){
 			return ((Float)obj).toString();
@@ -322,19 +322,19 @@ public class BriansimPythonBuilder {
 		return null;
 	}
 	public static void main(String[] args) {
-		Map<BrianSimParameter, Object> parms = new HashMap<BrianSimParameter, Object>();
-		parms.put(BrianSimParameter.dt_, 1.0f);
-		parms.put(BrianSimParameter.nw_arch, new int[]{32, 20, 3});
-		parms.put(BrianSimParameter.sim_dur_stdp, 500f);
-		parms.put(BrianSimParameter.sim_dur_ff, 500f);
-		parms.put(BrianSimParameter.conn1_init_weight, 3.0f);
-		parms.put(BrianSimParameter.conn2_init_weight, 5.0f);
-		parms.put(BrianSimParameter.stdp1_a_step, 1.0f);
-		parms.put(BrianSimParameter.stdp2_a_step, 1.0f);
-		parms.put(BrianSimParameter.stdp_tau, 10f);
-		parms.put(BrianSimParameter.stdp_gmax, 10000.0f);
-		parms.put(BrianSimParameter.spike_times_iter_stdp, new SpikeTimes[]{});
-		parms.put(BrianSimParameter.spike_times_iter_ff3d, new SpikeTimes[][]{});
+		Map<BrianSimParameterLabel, Object> parms = new HashMap<BrianSimParameterLabel, Object>();
+		parms.put(BrianSimParameterLabel.dt_, 1.0f);
+		parms.put(BrianSimParameterLabel.nw_arch, new int[]{32, 20, 3});
+		parms.put(BrianSimParameterLabel.sim_dur_stdp, 500f);
+		parms.put(BrianSimParameterLabel.sim_dur_ff, 500f);
+		parms.put(BrianSimParameterLabel.conn1_init_weight, 3.0f);
+		parms.put(BrianSimParameterLabel.conn2_init_weight, 5.0f);
+		parms.put(BrianSimParameterLabel.stdp1_a_step, 1.0f);
+		parms.put(BrianSimParameterLabel.stdp2_a_step, 1.0f);
+		parms.put(BrianSimParameterLabel.stdp_tau, 10f);
+		parms.put(BrianSimParameterLabel.stdp_gmax, 10000.0f);
+		parms.put(BrianSimParameterLabel.spike_times_iter_stdp, new SpikeTimes[]{});
+		parms.put(BrianSimParameterLabel.spike_times_iter_ff3d, new SpikeTimes[][]{});
 		
 		BriansimPythonBuilder builder = new BriansimPythonBuilder("testing.py", parms, false);
 		builder.build();

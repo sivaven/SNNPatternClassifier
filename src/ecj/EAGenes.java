@@ -1,4 +1,4 @@
-package training;
+package ecj;
 
 public class EAGenes {
 

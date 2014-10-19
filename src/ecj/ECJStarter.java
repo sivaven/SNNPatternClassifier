@@ -1,4 +1,4 @@
-package training;
+package ecj;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -7,6 +7,7 @@ import java.io.IOException;
 import classifier.Classifier;
 import outputwriter.FileUtils;
 import snn.SNN;
+import snn.SpikeTimes;
 import dataset.DataSet;
 import dataset.IrisDataset;
 import ec.EvolutionState;
@@ -17,22 +18,35 @@ import ec.util.ParameterDatabase;
 import encode.Encoder;
 
 public class ECJStarter {
+	private static float tSetFrac = 0.5f;  //(.1, .4) => n=15, 6
+	private static float fitSetFrac = 0.0f; // of tSet
+	public static float sampleEvalSetFrac = 0.4f; // of evalSet
+	
 	public static  DataSetManager dataSetManager;
 	public static Encoder encoder;
+
+	public static SpikeTimes[] stdpSpikeTimes;
+	
+	public static final float PATTERN_WINDOW = 20;
+	public static final float FF_SIM_DUR = 50;
 	//public static int[] nNeurons = new int[] {32, 15, 3};
 	
-	public static void main(String[] args) {
-		String parmsFile = "input/ecj2.params";
-		float tSetFrac = 0.5f;  //(.1, .4) => n=15, 6
-		float fitSetFrac = 0.6f; 
-				
+	public static void init() {
 		DataSet dataSet = new IrisDataset();
-		dataSetManager = new DataSetManager(dataSet);		
-		dataSetManager.setDataSetPartitions(tSetFrac, fitSetFrac);
 		encoder = new Encoder(dataSet, 8);	
+		dataSetManager = new DataSetManager(dataSet);
+	}
+	public static void resampleDataSets() {		
+		dataSetManager.setDataSetPartitions(tSetFrac, fitSetFrac);		
+		stdpSpikeTimes = encoder.encode(dataSetManager.getTrainingSet(), PATTERN_WINDOW);
+	}
+	
+	public static void main(String[] args) {
+		String parmsFile = "input/ecj3.params";	
+		init();		
 						
-		FileUtils.writeSummaryln("tSetKeys:"+dataSetManager.getTrainingSet().keySet().toString());
-		FileUtils.writeSummaryln("eSetKeys:"+dataSetManager.getEvaluationSet().keySet().toString());
+	//	FileUtils.writeSummaryln("tSetKeys:"+dataSetManager.getTrainingSet().keySet().toString());
+	//	FileUtils.writeSummaryln("eSetKeys:"+dataSetManager.getEvaluationSet().keySet().toString());
 		
 		try {	
 			ParameterDatabase parameterDB = new ParameterDatabase(new File(parmsFile));			
@@ -40,17 +54,18 @@ public class ECJStarter {
 			//parameterDB.set(new Parameter("pop.subpop.0.species.genome-size"), 
 			//		""+(new SNN(nNeurons).getNWeights()));
 			
-			for(int i=0; i<nJobs; i++)				{
-					Output output = Evolve.buildOutput();
-					String filePrefix = "output/job."; 
-					output.setFilePrefix(filePrefix+i+".");
-					final EvolutionState state = Evolve.initialize(parameterDB, i+1, output );	
-					state.run(EvolutionState.C_STARTED_FRESH);
-					updateSummaryFile(	i, 
-										filePrefix,
-										parameterDB.getInt(new Parameter("pop.subpop.0.species.genome-size"), 
-															new Parameter("pop.subpop.0.species.genome-size"))
-									);
+			for(int i=0; i<nJobs; i++){
+				resampleDataSets();
+				Output output = Evolve.buildOutput();
+				String filePrefix = "output/job."; 
+				output.setFilePrefix(filePrefix+i+".");
+				final EvolutionState state = Evolve.initialize(parameterDB, i+1, output );	
+				state.run(EvolutionState.C_STARTED_FRESH);
+/*				updateSummaryFile(	i, 
+									filePrefix,
+									parameterDB.getInt(new Parameter("pop.subpop.0.species.genome-size"), 
+														new Parameter("pop.subpop.0.species.genome-size"))
+								);*/
 				}	
 			FileUtils.closeSummaryFile();
 			FileUtils.closeStatFile();
@@ -74,7 +89,7 @@ public class ECJStarter {
         int[] arch = new int[]{32,hiddenN,hiddenN/4,3};		        
 		float[] cProb = genes.getGenes(1, 7);
 		float[] cW = genes.getGenes(8, 7);
-		SNN snn = new SNN(arch, cProb, cW);
+		SNN snn = null;//new SNN(arch, cProb, cW);
 		cl.setSNN(snn);
 		
 	    float tSetAcc = cl.evaluate(dataSetManager.getTrainingSet());

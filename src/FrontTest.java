@@ -3,11 +3,11 @@ import java.util.Map;
 
 import snn.SNN;
 import snn.SpikeTimes;
-import training.DataSetManager;
 import classifier.Classifier;
 import dataset.DataSet;
 import dataset.IrisDataset;
 import dataset.Pattern;
+import ecj.DataSetManager;
 import encode.Encoder;
 
 
@@ -22,7 +22,7 @@ public class FrontTest {
 		int[] arch = new int[]{32,800,200,3};		
 		float[] cProb = new float[] {0.8f, 0.2f, 0.05f, 0.02f, 0.01f, 0.01f, 0.01f };
 		float[] cW = new float[] {2, 2, 2, 2, 2, 2, 2};		
-		SNN snn = new SNN(arch, cProb, cW);
+		SNN snn = new SNN(arch);
 		cl.setSNN(snn);
 		
 		DataSetManager eval = new DataSetManager(dataSet);
@@ -49,7 +49,7 @@ public class FrontTest {
 		int[] arch = new int[]{32,800,200,3};		
 		float[] cProb = new float[] {0.8f, 0.2f, 0.05f, 0.02f, 0.01f, 0.01f, 0.01f };
 		float[] cW = new float[] {2, 2, 2, 2, 2, 2, 2};		
-		SNN snn = new SNN(arch, cProb, cW);
+		SNN snn = new SNN(arch);
 		cl.setSNN(snn);
 				
 		cl.evalStatDisplay = false;

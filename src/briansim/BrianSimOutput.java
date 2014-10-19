@@ -12,7 +12,6 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.StringTokenizer;
 
-import dataset.Pattern;
 import snn.SpikeTimes;
 
 public class BrianSimOutput {
@@ -23,25 +22,34 @@ public class BrianSimOutput {
 	private String outputFromBrian;
 	private Map<BrianOutputLabel, Object> items;
 	
+	public BrianSimOutput(String outputFromBrian) {
+		this.outputFromBrian = outputFromBrian;
+	}
 	public BrianSimOutput() {
 		outputFromBrian = "";
 	}
 	public void addOutputLn(String outputLn){
 		outputFromBrian += outputLn;
 	}
-	public void processOutput(){
+	public Integer processOutput(){
+		Integer patternKey = null;
 		items = new HashMap<>();		
 		StringTokenizer st = new StringTokenizer(outputFromBrian, ITEM_DELIM);
 		while(st.hasMoreTokens()) {
 			String item = st.nextToken();
 			mapItem(item);
-		}		
+		}
+		patternKey = (Integer)items.get(BrianOutputLabel.ip_pattern_idx);
+		return patternKey;
 	}
 	private void mapItem(String item){
 		StringTokenizer st = new StringTokenizer(item, LABEL_DELIM);
 		String label = st.nextToken();
 		String value = st.nextToken();
 		
+		if(BrianOutputLabel.ip_pattern_idx.toString().equals(label)){
+			items.put(BrianOutputLabel.ip_pattern_idx, Integer.valueOf(value.trim()));			
+		}
 		if(BrianOutputLabel.sim_time.toString().equals(label)){
 			items.put(BrianOutputLabel.sim_time, value);			
 		}
@@ -60,6 +68,7 @@ public class BrianSimOutput {
 	}
 	
 	public void displayItems(){
+		System.out.println("***Output From BrianSim***");
 		Iterator it = items.entrySet().iterator();
 		while (it.hasNext()) {
 	        Map.Entry pairs = (Map.Entry)it.next();
@@ -67,27 +76,28 @@ public class BrianSimOutput {
 	        Object object = pairs.getValue();
 	        if(BrianOutputLabel.op_layer_spike_times.equals(key)){
 	        	displayOpLayerSpikeTimes(object);
-	        }
-	        if(BrianOutputLabel.sim_time.equals(key)){
-	        	displaySimTime(object);
-	        }
-		}		
+	        }else{
+	        	displayString(key.name(), object);
+	        }	        
+		}
+		System.out.println("*************************");
 	}
 	
-	private void displaySimTime(Object object) {
-		System.out.println("SimTime.\t"+object);
+	public Map<BrianOutputLabel, Object> getItems(){
+		return this.items;
+	}
+	private void displayString(String itemLabel, Object item) {
+		System.out.println(itemLabel+".\t"+item);
 	}
 	
 	private void displayOpLayerSpikeTimes(Object object) {
 		ArrayList<SpikeTimes> spikeTimesList = (ArrayList<SpikeTimes>)object;
+		System.out.println(BrianOutputLabel.op_layer_spike_times+".");
 		for(SpikeTimes spikeTimes: spikeTimesList){
 			spikeTimes.display();
-			System.out.println();
-		}
-		
+		}		
 	}
-	public static void main(String[] args) {
-		
+	public static void main(String[] args) {		
 		BrianSimOutput output = new BrianSimOutput();
 		
 		File file = new File("temp.txt");

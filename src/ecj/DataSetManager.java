@@ -1,4 +1,4 @@
-package training;
+package ecj;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -49,5 +49,8 @@ public class DataSetManager {
 	}
 	public Map<Integer, Pattern> getEvaluationSet(){
 		return this.evaluationSet;
+	}
+	public Map<Integer, Pattern> getSampleEvaluationSet(float frac){
+		return dataSet.samplePatternSet(evaluationSet, frac);
 	}
 }

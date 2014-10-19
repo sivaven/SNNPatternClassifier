@@ -7,12 +7,13 @@ import java.util.Map;
 import java.util.TreeMap;
 
 import snn.SpikeTimes;
-import training.DataSetManager;
 import training.plasticity.STDP;
 import utils.Utils;
 import dataset.DataSet;
 import dataset.IrisDataset;
 import dataset.Pattern;
+import ecj.DataSetManager;
+import ecj.ECJStarter;
 
 public class Encoder {
 
@@ -82,9 +83,9 @@ public class Encoder {
 	 * rfCode = 0 => spikeTime = 10
 	 */
 	public float getSpikeTimeFromRFCode(float rfCode){
-		float spikeTime = Math.round((1-rfCode)*20);
+		float spikeTime = Math.round((1-rfCode)*ECJStarter.PATTERN_WINDOW);
 		if(spikeTime > 18) 
-			spikeTime = STDP.DURATION+10;
+			spikeTime = 10000;
 		return spikeTime;
 	}
 	public void displayRFmus(){
@@ -106,12 +107,13 @@ public class Encoder {
 	/*
 	 * return the neuron idx that fires first
 	 */
-	public int decode(SpikeTimes[] spikeTimes) {
+	public int decode(ArrayList<SpikeTimes> OpLayerspikeTimes) {
 		int neuronIdx = -1;
 		float earliestFiringTime = Float.MAX_VALUE;
-		for(int i=0;i<spikeTimes.length;i++){
-			if(spikeTimes[i]!=null && spikeTimes[i].getSpikeTimes().size()>0){
-				float currentNeuronFirTime = spikeTimes[i].getSpikeTimes().get(0);				
+		int i=0;
+		for(SpikeTimes spikeTimes:OpLayerspikeTimes){
+			if(spikeTimes!=null && spikeTimes.getSpikeTimes().size()>0){
+				float currentNeuronFirTime = spikeTimes.getSpikeTimes().get(0);				
 				if(Utils.isCloseEnough(currentNeuronFirTime, earliestFiringTime, 0.5f)){
 					neuronIdx = -1;
 					earliestFiringTime = currentNeuronFirTime;
@@ -120,6 +122,7 @@ public class Encoder {
 					earliestFiringTime = currentNeuronFirTime;
 				}
 			}
+			i++;
 		}
 		return neuronIdx;
 	}

@@ -1,6 +1,5 @@
-package training;
+package ecj;
 
-import snn.SNN;
 import classifier.Classifier;
 import ec.EvolutionState;
 import ec.Individual;
@@ -23,25 +22,18 @@ public class ECProblem extends Problem implements SimpleProblemForm{
 	            state.output.fatal("Whoa!  It's not a FloatVectorIndividual!!!",null);	         
 	       
 	        float fitness = 0;
-	        FloatVectorIndividual ind2 = (FloatVectorIndividual)ind; 
-	        EAGenes genes = new EAGenes(ind2.genome);
+	        FloatVectorIndividual ind2 = (FloatVectorIndividual)ind; 	
+	        SnnParameters snnParms = new SnnParameters(ind2.genome);
 	        
 	        Classifier cl = new Classifier(ECJStarter.encoder);		        
 	        cl.evalStatDetailDisplay =false;
 	       // cl.setDebug(true);
+			cl.setSNN(snnParms.constructSnn());
 	        /*
 	         * 
 	         */
-	        int hiddenN = (int) genes.getGene(0);
-	        int[] arch = new int[]{32,hiddenN,hiddenN/4,3};		        
-			float[] cProb = genes.getGenes(1, 7);
-			float[] cW = genes.getGenes(8, 7);
-			SNN snn = new SNN(arch, cProb, cW);
-			cl.setSNN(snn);
-	        /*
-	         * 
-	         */
-	        fitness = cl.evaluate(ECJStarter.dataSetManager.sampleFitEvalSet());
+			
+	        fitness = cl.doStdpThenevaluate(ECJStarter.dataSetManager.getSampleEvaluationSet(ECJStarter.sampleEvalSetFrac));
 	       
 	       // System.out.println("evaluate");
 	        

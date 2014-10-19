@@ -1,20 +1,18 @@
 package snn;
 
-import java.util.Random;
+import java.util.HashMap;
+import java.util.Map;
 
 import snn.constants.LayerLabel;
+import briansim.BrianSimParameterLabel;
 
 public class SNN {
 	Layer[] layers;
-	private int[] nNeurons;
-	/*
-	 * 2nd architecture	
-	 */
-	private float[] connProb;
-	private float[] connWeight;
+	Map<BrianSimParameterLabel, Object> parms;
 	
 	public SNN(int[] nNeurons) {
-		this.nNeurons = nNeurons;
+		parms = new HashMap<BrianSimParameterLabel, Object>();
+		addParameter(BrianSimParameterLabel.nw_arch, nNeurons);
 		layers = new Layer[nNeurons.length];
 		for(int i=0;i<layers.length;i++) {
 			LayerLabel label;
@@ -36,30 +34,15 @@ public class SNN {
 		}
 	}
 	
-	public SNN(int[] nNeurons, float[] connProb, float[] connWeight) {
-		this.nNeurons = nNeurons;
-		this.connProb= connProb;
-		this.connWeight = connWeight;
-		
-		layers = new Layer[nNeurons.length];
-		for(int i=0;i<layers.length;i++) {
-			LayerLabel label;
-			if(i==0) {
-				label = LayerLabel.INPUT;
-			}else if(i==layers.length-1) {
-				label = LayerLabel.OUTPUT;
-			}else {
-				label = LayerLabel.HIDDEN;
-			}
-			
-			if(label.equals(LayerLabel.INPUT) || label.equals(LayerLabel.HIDDEN)) {
-				layers[i] = new Layer(label, nNeurons[i], nNeurons[i+1]);
-			}
-			
-			if(label.equals(LayerLabel.OUTPUT)) {
-				layers[i] = new Layer(label, nNeurons[i]);
-			}						
-		}
+	public void addParameter(BrianSimParameterLabel parm, Object value){
+		parms.put(parm, value);
+	}
+	
+	public Map<BrianSimParameterLabel, Object> getParms(){
+		return this.parms;
+	}
+	public void setParms(Map<BrianSimParameterLabel, Object> parms){
+		this.parms = parms;
 	}
 	public void randomizeWeights(int magFactor) {
 		for(Layer layer: this.layers){
@@ -95,7 +78,7 @@ public class SNN {
 	public int getNWeights() {
 		int n=0;
 		for(int i=0;i<layers.length-1;i++) {
-			n += this.nNeurons[i]*this.nNeurons[i+1];
+			n += this.getArch()[i]*this.getArch()[i+1];
 		}
 		return n;
 	}
@@ -105,7 +88,7 @@ public class SNN {
 	}
 	public String getStructSimple(){
 		String str = "";
-		for(int n: nNeurons){
+		for(int n: getArch()){
 			//str +=
 		}
 		return str;
@@ -141,16 +124,9 @@ public class SNN {
 			spikeTime.display();
 	}
 
-	public float[] getConnProb() {
-		return connProb;
-	}
-
-	public float[] getConnWeight() {
-		return connWeight;
-	}
 
 	public int[] getArch() {
-		return this.nNeurons;
+		return (int[]) this.parms.get(BrianSimParameterLabel.nw_arch);
 	}
 }
 
