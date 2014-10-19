@@ -67,7 +67,7 @@ public class STDP {
 		ECJStarter.init();
 		ECJStarter.resampleDataSets();
 		
-		float[] genes = new float[] {20, 3, 5, 0.1f, 0.1f, 10};
+		float[] genes = new float[] {20, 3, 5, 0.1f, 0.1f, 10, 0.5f, 0.5f, 99};
 		SnnParameters snnParms = new SnnParameters(genes);
 		SNN snn = snnParms.constructSnn();
 		

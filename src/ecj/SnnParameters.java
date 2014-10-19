@@ -5,7 +5,7 @@ import snn.SNN;
 
 public class SnnParameters {
 	private static final float dt_ = 1.0f;
-	private static final float stdp_gmax = 100.0f;
+	//private static final float stdp_gmax = 100.0f;
 	
 	float[] genes;
 	
@@ -31,6 +31,15 @@ public class SnnParameters {
 	public float tau() {
 		return genes[5];
 	}
+	public float getConn1Prob() {
+		return genes[6];
+	}
+	public float getConn2Prob() {
+		return genes[7];
+	}
+	public float getGmax() {
+		return genes[8];
+	}
 	public SNN constructSnn(){
 		/*
 		 * add EA parms to SNN
@@ -41,11 +50,14 @@ public class SnnParameters {
 		snn.addParameter(BrianSimParameterLabel.stdp1_a_step, getA_1());
 		snn.addParameter(BrianSimParameterLabel.stdp2_a_step, getA_2());
 		snn.addParameter(BrianSimParameterLabel.stdp_tau, tau());
+		snn.addParameter(BrianSimParameterLabel.conn1_prob, getConn1Prob());
+		snn.addParameter(BrianSimParameterLabel.conn2_prob, getConn2Prob());
+		snn.addParameter(BrianSimParameterLabel.stdp_gmax, getGmax());
 		/*
 		 * add constants
 		 */
 		snn.addParameter(BrianSimParameterLabel.dt_, dt_);
-		snn.addParameter(BrianSimParameterLabel.stdp_gmax, stdp_gmax);
+		
 		snn.addParameter(BrianSimParameterLabel.sim_dur_stdp, (float)ECJStarter.dataSetManager.getTrainingSet().size()
 				*ECJStarter.PATTERN_WINDOW);
 		snn.addParameter(BrianSimParameterLabel.sim_dur_ff, ECJStarter.FF_SIM_DUR);

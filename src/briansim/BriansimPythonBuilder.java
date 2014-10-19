@@ -98,8 +98,12 @@ public class BriansimPythonBuilder {
 		writeLnToModule("outputLayer.U =0");
 		writeLnToModule("");
 			
-		writeLnToModule("conn1 = Connection(inputLayer, hiddenLayer, 'V', weight="+BrianSimParameterLabel.conn1_init_weight+"*mV, sparseness=1)");
-		writeLnToModule("conn2 = Connection(hiddenLayer, outputLayer, 'V', weight="+BrianSimParameterLabel.conn2_init_weight+"*mV, sparseness=1)");		
+		writeLnToModule("conn1 = Connection(inputLayer, hiddenLayer, 'V', "
+						+ "weight="+BrianSimParameterLabel.conn1_init_weight+"*mV, "
+						+ "sparseness="+BrianSimParameterLabel.conn1_prob+")");
+		writeLnToModule("conn2 = Connection(hiddenLayer, outputLayer, 'V', "
+						+ "weight="+BrianSimParameterLabel.conn2_init_weight+"*mV, "
+						+ "sparseness="+BrianSimParameterLabel.conn2_prob+")");		
 	}
 	void writeSTDP(){
 		writeLnToModule("tau = "+BrianSimParameterLabel.stdp_tau+"*ms");
