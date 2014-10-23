@@ -1,5 +1,6 @@
 package ecj;
 
+import code.Decoder;
 import classifier.Classifier;
 import ec.EvolutionState;
 import ec.Individual;
@@ -25,7 +26,8 @@ public class ECProblem extends Problem implements SimpleProblemForm{
 	        FloatVectorIndividual ind2 = (FloatVectorIndividual)ind; 	
 	        SnnParameters snnParms = new SnnParameters(ind2.genome);
 	        
-	        Classifier cl = new Classifier(ECJStarter.encoder);		        
+	       
+	        Classifier cl = new Classifier(ECJStarter.encoder, ECJStarter.decoder);		        
 	        cl.evalStatDetailDisplay =false;
 	       // cl.setDebug(true);
 			cl.setSNN(snnParms.constructSnn());

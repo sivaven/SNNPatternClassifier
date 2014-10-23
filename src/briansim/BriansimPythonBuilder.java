@@ -115,7 +115,8 @@ public class BriansimPythonBuilder {
 				+ "post='A_post+="+BrianSimParameterLabel.stdp2_a_step+"*mV;w+=A_pre',wmax="+BrianSimParameterLabel.stdp_gmax+"*mV, clock=simclock)");
 	}
 	void writeMonitors(){
-		writeLnToModule("SMO = SpikeMonitor(outputLayer)");
+	//	writeLnToModule("SMO = SpikeMonitor(outputLayer)");
+		writeLnToModule("Mpr = PopulationRateMonitor(outputLayer, bin=1*ms)");
 		writeLnToModule("");
 		if(plot){
 			writeLnToModule("SMI = SpikeMonitor(inputLayer)");
@@ -147,9 +148,11 @@ public class BriansimPythonBuilder {
 		writeLnToModule("\tt2 = time()");
 		writeLnToModule("\tprint \"#$"+BrianOutputLabel.ip_pattern_idx+":\", ipPatternIdx");
 		writeLnToModule("\tprint \"$"+BrianOutputLabel.sim_time+":\", t2 - t1, \"s\"");	
-		writeLnToModule("\tprint \"$"+BrianOutputLabel.op_layer_spike_times+":\"");
-		writeLnToModule("\tfor i in xrange(0, "+BrianSimParameterLabel.nw_arch+"[len("+BrianSimParameterLabel.nw_arch+")-1]):");
-		writeLnToModule("\t\tprint \" \".join(str(p) for p in SMO[i])+\",\"");
+//		writeLnToModule("\tprint \"$"+BrianOutputLabel.op_layer_spike_times+":\"");
+//		writeLnToModule("\tfor i in xrange(0, "+BrianSimParameterLabel.nw_arch+"[len("+BrianSimParameterLabel.nw_arch+")-1]):");
+//		writeLnToModule("\t\tprint \" \".join(str(p) for p in SMO[i])+\",\"");
+		writeLnToModule("\tprint \"$"+BrianOutputLabel.op_layer_pop_rates+":\",\" \".join(str(p) for p in Mpr.rate)");
+	//	writeLnToModule("\tprint \" \".join(str(p) for p in Mpr.rate)+\",\"");
 		writeLnToModule("");
 		if(this.plot) {
 			writeLnToModule("\tcolors=[0,0,0]");

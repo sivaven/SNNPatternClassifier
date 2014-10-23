@@ -13,6 +13,7 @@ import java.util.Map;
 import java.util.StringTokenizer;
 
 import snn.SpikeTimes;
+import utils.Utils;
 
 public class BrianSimOutput {
 	private static final String ITEM_DELIM = "$";
@@ -56,6 +57,9 @@ public class BrianSimOutput {
 		if(BrianOutputLabel.op_layer_spike_times.toString().equals(label)){
 			mapOpLayerSpikeTimes(value);			
 		}
+		if(BrianOutputLabel.op_layer_pop_rates.toString().equals(label)){
+			items.put(BrianOutputLabel.op_layer_pop_rates, Utils.getFloatedList(value));	
+		}
 	}
 	private void mapOpLayerSpikeTimes(String values){
 		StringTokenizer st = new StringTokenizer(values, LINE_DELIM);
@@ -66,6 +70,8 @@ public class BrianSimOutput {
 		}
 		items.put(BrianOutputLabel.op_layer_spike_times, spikeTimesList);
 	}
+	
+	
 	
 	public void displayItems(){
 		System.out.println("***Output From BrianSim***");
@@ -129,5 +135,5 @@ public class BrianSimOutput {
 }
 
 enum BrianOutputLabel {
-	sim_time, op_layer_spike_times, ip_pattern_idx
+	sim_time, op_layer_spike_times, ip_pattern_idx, op_layer_pop_rates
 }

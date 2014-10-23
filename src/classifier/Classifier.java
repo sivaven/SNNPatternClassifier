@@ -3,39 +3,40 @@ package classifier;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.Map;
-import java.util.Set;
 
-import briansim.BrianSimParameterLabel;
-import briansim.BrianSimProcess;
 import outputwriter.FileUtils;
 import snn.SNN;
 import snn.SpikeTimes;
+import briansim.BrianSimParameterLabel;
+import briansim.BrianSimProcess;
+import code.Decoder;
+import code.Encoder;
 import dataset.DataSet;
 import dataset.Pattern;
-import ecj.ECJStarter;
-import encode.Encoder;
 
 public class Classifier {
 
 	private SNN snn;	
 	private Encoder encoder;
+	private Decoder decoder;
 	
 	private boolean debug = false;
 	public boolean evalStatDisplay = false;
 	public boolean evalStatDetailDisplay = false;
 	
-	public Classifier(int[] arch, Encoder encoder_) {
-		snn = new SNN(arch);
-		this.encoder = encoder_;
-	}
-	public Classifier(SNN snn, Encoder encoder_) {
+	public Classifier(SNN snn, Encoder encoder_, Decoder decoder_) {
 		this.snn = snn;
 		this.encoder = encoder_;
+		this.decoder = decoder_;
 	}
+	public Classifier(int[] arch, Encoder encoder_, Decoder decoder_) {
+		this(new SNN(arch), encoder_, decoder_);
+	}	
 	
-	public Classifier(Encoder encoder_) {
+	public Classifier(Encoder encoder_, Decoder _decoder) {
 		this.snn = null;
 		this.encoder = encoder_;
+		this.decoder = _decoder;
 	}
 	
 	public void randomizeWeights(int magFactor) {
@@ -60,7 +61,7 @@ public class Classifier {
 	public void setSNN(SNN snn){
 		this.snn = snn;
 	}
-	public float doStdpThenevaluate(Map<Integer, Pattern> ffSet) {
+	public float doStdpThenevaluate(Map<Integer, Pattern> ffSet, boolean deleteModuleAfterRun, boolean doPlot) {
 		/*
 		 * add remaining parms to snn, related to dataset
 		 */
@@ -82,8 +83,8 @@ public class Classifier {
 		 * run brian sim process		
 		 */
 		BrianSimProcess bsm = new BrianSimProcess();
-		String moduleName = bsm.buildPythonModule(snn.getParms());		
-		bsm.runBrianSimSNN(moduleName, true);	
+		String moduleName = bsm.buildPythonModule(snn.getParms(), doPlot);		
+		bsm.runBrianSimSNN(moduleName, deleteModuleAfterRun);	
 		//bsm.displayBrianOutput();
 		/*
 		 * evaluate
@@ -94,7 +95,8 @@ public class Classifier {
 	        Map.Entry pairs = (Map.Entry)it2.next();
 	        Integer key = (Integer) pairs.getKey();
 	        Pattern pattern = (Pattern) pairs.getValue();	        
-	        int classBySnn = encoder.decode(bsm.getOutputLayerSpikeTimesForPattern(key));
+	    //    int classBySnn = encoder.decode(bsm.getOutputLayerSpikeTimesForPattern(key));
+	        int classBySnn = decoder.decode(bsm.getOutputLayerPopRatesForPattern(key));
 	        if(pattern.get_class().getNumericClass() == classBySnn){
 	        	score += 1;
 	        }
@@ -103,6 +105,9 @@ public class Classifier {
 	        }
 		}	
 		return (1.0f*score)/(1.0f*ffSet.size());
+	}
+	public float doStdpThenevaluate(Map<Integer, Pattern> ffSet) {
+		return doStdpThenevaluate(ffSet, true, false);
 	}
 	
 	public float evaluate(Map<Integer, Pattern> patternSet){

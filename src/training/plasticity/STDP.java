@@ -1,24 +1,10 @@
 package training.plasticity;
 
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map;
-import java.util.Set;
-import java.util.TreeMap;
-
-import briansim.BrianSimParameterLabel;
-import briansim.BrianSimProcess;
-import briansim.BriansimPythonBuilder;
 import snn.SNN;
-import snn.SpikeTimes;
 import classifier.Classifier;
-import dataset.DataSet;
-import dataset.IrisDataset;
-import dataset.Pattern;
-import ecj.DataSetManager;
+import code.Decoder;
 import ecj.ECJStarter;
 import ecj.SnnParameters;
-import encode.Encoder;
 
 public class STDP {
 	public static final float TIME_INTERVAL_BW_IP_PATTERNS = 20;
@@ -67,17 +53,24 @@ public class STDP {
 		ECJStarter.init();
 		ECJStarter.resampleDataSets();
 		
-		float[] genes = new float[] {20, 3, 5, 0.1f, 0.1f, 10, 0.5f, 0.5f, 99};
+		float[] genes = new float[] {100, 3, 3, 0.1f, 0.1f, 100, 0.5f, 0.5f, 10};
 		SnnParameters snnParms = new SnnParameters(genes);
 		SNN snn = snnParms.constructSnn();
 		
-		Classifier cl = new Classifier(ECJStarter.encoder);			
+		float popRateThresh = 150;
+		float bin  = 1;
+		float[] classSpikeTimes = new float[] {18, 19, 20};
+		
+		Decoder decoder = new Decoder(popRateThresh, bin, classSpikeTimes);
+		Classifier cl = new Classifier(ECJStarter.encoder, decoder);			
 		cl.setSNN(snn);
 		cl.evalStatDisplay= true;
         /*
          * 
          */		
-        float score = cl.doStdpThenevaluate(ECJStarter.dataSetManager.getSampleEvaluationSet(ECJStarter.sampleEvalSetFrac));
+        float score = cl.doStdpThenevaluate(ECJStarter.dataSetManager.getSampleEvaluationSet(ECJStarter.sampleEvalSetFrac)
+        									, false,
+        									false);
         System.out.println("\n**Accuracy.\t"+score);
 	/*	BrianSimProcess bsm = new BrianSimProcess(snn);
 		double time = System.currentTimeMillis();

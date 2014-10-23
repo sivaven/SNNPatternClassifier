@@ -1,5 +1,8 @@
 package utils;
 
+import java.util.ArrayList;
+import java.util.StringTokenizer;
+
 public class Utils {
 	public static void displayArray(float[] array){
 		for(float f: array)
@@ -17,5 +20,15 @@ public class Utils {
 			return true;
 		else
 			return false;
+	}
+	public static ArrayList<Float> getFloatedList(String stringList) {
+		ArrayList<Float> floatedList = new ArrayList<>();		
+		StringTokenizer st = new StringTokenizer(stringList, " ");
+		String token = null;		
+		while(st.hasMoreTokens()) {
+			token = st.nextToken();
+			floatedList.add(Float.parseFloat(token));
+		}
+		return floatedList;
 	}
 }

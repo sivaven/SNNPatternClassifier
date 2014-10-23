@@ -186,7 +186,7 @@ public class DataSet {
 		return orderedMap;
 	}
 	
-	public void shuffleMap(Map<Integer, Pattern> patternSet){
+	public static void shuffleMap(Map<Integer, Pattern> patternSet){
 		final List<Pattern> patternList = new ArrayList<Pattern>(patternSet.values());
 		Collections.shuffle(patternList);
 		

@@ -3,19 +3,22 @@ package ecj;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.util.Map;
 
+import code.Decoder;
+import code.Encoder;
 import classifier.Classifier;
 import outputwriter.FileUtils;
 import snn.SNN;
 import snn.SpikeTimes;
 import dataset.DataSet;
 import dataset.IrisDataset;
+import dataset.Pattern;
 import ec.EvolutionState;
 import ec.Evolve;
 import ec.util.Output;
 import ec.util.Parameter;
 import ec.util.ParameterDatabase;
-import encode.Encoder;
 
 public class ECJStarter {
 	private static float tSetFrac = 0.5f;  //(.1, .4) => n=15, 6
@@ -24,7 +27,7 @@ public class ECJStarter {
 	
 	public static  DataSetManager dataSetManager;
 	public static Encoder encoder;
-
+	public static Decoder decoder;
 	public static SpikeTimes[] stdpSpikeTimes;
 	
 	public static final float PATTERN_WINDOW = 20;
@@ -32,13 +35,21 @@ public class ECJStarter {
 	//public static int[] nNeurons = new int[] {32, 15, 3};
 	
 	public static void init() {
-		DataSet dataSet = new IrisDataset();
+		DataSet dataSet = new IrisDataset();		
 		encoder = new Encoder(dataSet, 8);	
+		
+		float popRateThresh = 150;
+		float bin  = 1;
+		float[] classSpikeTimes = new float[] {18, 19, 20};
+		decoder = new Decoder(popRateThresh, bin, classSpikeTimes);
+			
 		dataSetManager = new DataSetManager(dataSet);
 	}
 	public static void resampleDataSets() {		
-		dataSetManager.setDataSetPartitions(tSetFrac, fitSetFrac);		
-		stdpSpikeTimes = encoder.encode(dataSetManager.getTrainingSet(), PATTERN_WINDOW);
+		dataSetManager.setDataSetPartitions(tSetFrac, fitSetFrac);
+		Map<Integer, Pattern> tSet = dataSetManager.getTrainingSet();
+		DataSet.shuffleMap(tSet);
+		stdpSpikeTimes = encoder.encode(tSet, PATTERN_WINDOW);
 	}
 	
 	public static void main(String[] args) {
@@ -82,7 +93,7 @@ public class ECJStarter {
 	
 	private static void updateSummaryFile(int trial, String ecOpFilePrefix,  int nParms) {
 		float[] bestSoln = FileUtils.readBestSolution(ecOpFilePrefix+trial+".full", 6, nParms);		
-		Classifier cl = new Classifier(ECJStarter.encoder);	
+		Classifier cl = new Classifier(ECJStarter.encoder, null);	
 		EAGenes genes = new EAGenes(bestSoln);
 		
 		int hiddenN = (int) genes.getGene(0);

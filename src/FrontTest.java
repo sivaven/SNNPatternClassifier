@@ -1,6 +1,7 @@
 import java.util.ArrayList;
 import java.util.Map;
 
+import code.Encoder;
 import snn.SNN;
 import snn.SpikeTimes;
 import classifier.Classifier;
@@ -8,7 +9,6 @@ import dataset.DataSet;
 import dataset.IrisDataset;
 import dataset.Pattern;
 import ecj.DataSetManager;
-import encode.Encoder;
 
 
 public class FrontTest {
