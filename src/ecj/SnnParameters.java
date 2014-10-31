@@ -14,31 +14,31 @@ public class SnnParameters {
 	}
 	
 	public int[] getNwArch() {
-		return new int[] {32, (int)genes[0], (int)genes[0]};
+		return new int[] {32, (int)genes[0], (int)genes[1]};
 	}
 	public float getConn1InitWeight() {
-		return genes[1];
-	}	
-	public float getConn2InitWeight() {
 		return genes[2];
 	}	
-	public float getA_1() {
+	public float getConn2InitWeight() {
 		return genes[3];
-	}
-	public float getA_2() {
+	}	
+	public float getA_1() {
 		return genes[4];
 	}
-	public float tau() {
+	public float getA_2() {
 		return genes[5];
 	}
-	public float getConn1Prob() {
+	public float tau() {
 		return genes[6];
 	}
+	public float getConn1Prob() {
+		return 1;//genes[7];
+	}
 	public float getConn2Prob() {
-		return genes[7];
+		return 1;//genes[8];
 	}
 	public float getGmax() {
-		return genes[8];
+		return genes[9];
 	}
 	public SNN constructSnn(){
 		/*

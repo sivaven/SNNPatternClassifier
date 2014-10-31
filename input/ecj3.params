@@ -30,7 +30,7 @@ stat.do-generation = false
 
 pop.subpops		= 1
 pop.subpop.0		= ec.Subpopulation
-pop.subpop.0.size 		= 48
+pop.subpop.0.size 		= 24
 pop.subpop.0.duplicate-retries 	= 0
 #
 pop.subpop.0.species 		= ec.vector.FloatVectorSpecies
@@ -41,29 +41,29 @@ base.likelihood = 0.5
 ####
 ####
 ####
-pop.subpop.0.species.genome-size	= 9
+pop.subpop.0.species.genome-size	= 10
 pop.subpop.0.species.min-gene = -1
 pop.subpop.0.species.max-gene = 1
 pop.subpop.0.species.mutation-type = gauss
 pop.subpop.0.species.mutation-stdev = 1.0					
 pop.subpop.0.species.mutation-prob = 0.3					
 pop.subpop.0.species.out-of-bounds-retries = 0
-pop.subpop.0.species.mutation-bounded = true
+pop.subpop.0.species.mutation-bounded = false
 
 pop.subpop.0.species.num-segments = 6
 pop.subpop.0.species.segment-type = start
 pop.subpop.0.species.segment.0.start = 0
-pop.subpop.0.species.segment.1.start = 1
-pop.subpop.0.species.segment.2.start = 3
-pop.subpop.0.species.segment.3.start = 5
-pop.subpop.0.species.segment.4.start = 6
-pop.subpop.0.species.segment.5.start = 8
+pop.subpop.0.species.segment.1.start = 2
+pop.subpop.0.species.segment.2.start = 4
+pop.subpop.0.species.segment.3.start = 6
+pop.subpop.0.species.segment.4.start = 7
+pop.subpop.0.species.segment.5.start = 9
 
-pop.subpop.0.species.segment.0.min-gene = 50
-pop.subpop.0.species.segment.0.max-gene = 200
+pop.subpop.0.species.segment.0.min-gene = 1
+pop.subpop.0.species.segment.0.max-gene = 20
 pop.subpop.0.species.segment.0.mutation-type = integer-random-walk
 pop.subpop.0.species.segment.0.random-walk-probability = 0.3
-pop.subpop.0.species.segment.0.bounded = true
+pop.subpop.0.species.segment.0.bounded = false
 
 pop.subpop.0.species.segment.1.min-gene = 1
 pop.subpop.0.species.segment.1.max-gene = 10
