@@ -109,6 +109,7 @@ public class BrianSimProcess {
 	public ArrayList<Float> getOutputLayerPopRatesForPattern(Integer patternKey) {
 		if(!brianPatternKeyOutputMap.containsKey(patternKey)){
 			System.out.println("Pattern key not returned from brianSim.\t"+patternKey);
+			displayBrianOutput();
 			System.exit(-1);
 		}
 		return (ArrayList<Float>) brianPatternKeyOutputMap.get(patternKey).getItems().get(BrianOutputLabel.op_layer_pop_rates);
