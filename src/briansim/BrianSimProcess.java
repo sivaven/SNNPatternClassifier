@@ -100,7 +100,7 @@ public class BrianSimProcess {
 
 	public ArrayList<SpikeTimes> getOutputLayerSpikeTimesForPattern(Integer patternKey) {
 		if(!brianPatternKeyOutputMap.containsKey(patternKey)){
-			System.out.println("Pattern key not returned from brianSim.\t"+patternKey);
+			System.out.println("<getOutputLayerSpikeTimesForPattern> \tPattern key not returned from brianSim.\t"+patternKey);
 			System.exit(-1);
 		}
 		return (ArrayList<SpikeTimes>) brianPatternKeyOutputMap.get(patternKey).getItems().get(BrianOutputLabel.op_layer_spike_times);
@@ -108,7 +108,7 @@ public class BrianSimProcess {
 	
 	public ArrayList<Float> getOutputLayerPopRatesForPattern(Integer patternKey) {
 		if(!brianPatternKeyOutputMap.containsKey(patternKey)){
-			System.out.println("Pattern key not returned from brianSim.\t"+patternKey);
+			System.out.println("<getOutputLayerPopRatesForPattern> \tPattern key not returned from brianSim.\t"+patternKey);
 			displayBrianOutput();
 			System.exit(-1);
 		}

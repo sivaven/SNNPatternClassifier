@@ -26,14 +26,19 @@ public class ECProblem extends Problem implements SimpleProblemForm{
 	        FloatVectorIndividual ind2 = (FloatVectorIndividual)ind; 	
 	        SnnParameters snnParms = new SnnParameters(ind2.genome);
 	        
-	       
-	        Classifier cl = new Classifier(ECJStarter.encoder, ECJStarter.decoder);		        
+	        /*
+	         * first setup decoder from genes
+	         */	     
+			float bin  = 1;
+			Decoder decoder = new Decoder(snnParms.getPopRateThresh(), bin, snnParms.getClassTimesToThresh());	       
+	        Classifier cl = new Classifier(ECJStarter.encoder, decoder);		        
 	        cl.evalStatDetailDisplay =false;
 	       // cl.setDebug(true);
-			cl.setSNN(snnParms.constructSnn());
 	        /*
-	         * 
+	         * then setup snn parmaeters
 	         */
+			cl.setSNN(snnParms.constructSnn());
+	        
 			
 	        fitness = cl.doStdpThenevaluate(ECJStarter.dataSetManager.getSampleEvaluationSet(ECJStarter.sampleEvalSetFrac));
 	       

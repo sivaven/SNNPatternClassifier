@@ -38,10 +38,11 @@ public class ECJStarter {
 		DataSet dataSet = new IrisDataset();		
 		encoder = new Encoder(dataSet, 8);	
 		
-		float popRateThresh = 150;
+	/*	float popRateThresh = 150;
 		float bin  = 1;
 		float[] classSpikeTimes = new float[] {18, 19, 20};
 		decoder = new Decoder(popRateThresh, bin, classSpikeTimes);
+		*/
 			
 		dataSetManager = new DataSetManager(dataSet);
 	}

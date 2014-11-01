@@ -17,7 +17,7 @@ public class FrontTest {
 		
 		DataSet dataSet = new IrisDataset();	
 		Encoder encoder = new Encoder(dataSet, 8);	
-		Classifier cl = new Classifier(encoder);
+		Classifier cl = new Classifier(encoder, null);
 		
 		int[] arch = new int[]{32,800,200,3};		
 		float[] cProb = new float[] {0.8f, 0.2f, 0.05f, 0.02f, 0.01f, 0.01f, 0.01f };
@@ -44,7 +44,7 @@ public class FrontTest {
 		
 		DataSet dataSet = new IrisDataset();	
 		Encoder encoder = new Encoder(dataSet, 8);	
-		Classifier cl = new Classifier(encoder);
+		Classifier cl = new Classifier(encoder, null);
 		
 		int[] arch = new int[]{32,800,200,3};		
 		float[] cProb = new float[] {0.8f, 0.2f, 0.05f, 0.02f, 0.01f, 0.01f, 0.01f };

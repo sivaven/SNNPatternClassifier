@@ -38,7 +38,15 @@ public class SnnParameters {
 		return 1;//genes[8];
 	}
 	public float getGmax() {
-		return genes[9];
+		return genes[7];
+	}
+	
+	public float getPopRateThresh(){
+		return genes[8];
+	}
+	
+	public float[] getClassTimesToThresh() {
+		return new float[] {genes[9], genes[10], genes[11]};
 	}
 	public SNN constructSnn(){
 		/*
