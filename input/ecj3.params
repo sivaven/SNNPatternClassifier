@@ -85,6 +85,9 @@ pop.subpop.0.species.segment.4.max-gene = 100
 
 pop.subpop.0.species.segment.5.min-gene = 0
 pop.subpop.0.species.segment.5.max-gene = 1
+pop.subpop.0.species.segment.5.mutation-type = gauss
+pop.subpop.0.species.segment.5.mutation-stdev = 0.2					
+pop.subpop.0.species.segment.5.mutation-prob = 0.3	
 pop.subpop.0.species.segment.5.mutation-bounded = true
 
 pop.subpop.0.species.segment.6.min-gene = 5
