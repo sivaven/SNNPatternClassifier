@@ -41,7 +41,7 @@ base.likelihood = 0.5
 ####
 ####
 ####
-pop.subpop.0.species.genome-size	= 11
+pop.subpop.0.species.genome-size	= 13
 pop.subpop.0.species.min-gene = -1
 pop.subpop.0.species.max-gene = 1
 pop.subpop.0.species.mutation-type = gauss
@@ -50,7 +50,7 @@ pop.subpop.0.species.mutation-prob = 0.3
 pop.subpop.0.species.out-of-bounds-retries = 0
 pop.subpop.0.species.mutation-bounded = false
 
-pop.subpop.0.species.num-segments = 8
+pop.subpop.0.species.num-segments = 9
 pop.subpop.0.species.segment-type = start
 pop.subpop.0.species.segment.0.start = 0
 pop.subpop.0.species.segment.1.start = 2
@@ -58,12 +58,13 @@ pop.subpop.0.species.segment.2.start = 4
 pop.subpop.0.species.segment.3.start = 6
 pop.subpop.0.species.segment.4.start = 7
 pop.subpop.0.species.segment.5.start = 8
-pop.subpop.0.species.segment.6.start = 9
-pop.subpop.0.species.segment.7.start = 10
+pop.subpop.0.species.segment.6.start = 10
+pop.subpop.0.species.segment.7.start = 11
+pop.subpop.0.species.segment.8.start = 12
 
 ##
 pop.subpop.0.species.segment.0.min-gene = 1
-pop.subpop.0.species.segment.0.max-gene = 50
+pop.subpop.0.species.segment.0.max-gene = 100
 pop.subpop.0.species.segment.0.mutation-type = integer-random-walk
 pop.subpop.0.species.segment.0.random-walk-probability = 0.3
 pop.subpop.0.species.segment.0.mutation-bounded = true
@@ -82,20 +83,24 @@ pop.subpop.0.species.segment.3.random-walk-probability = 0.3
 pop.subpop.0.species.segment.4.min-gene = 1
 pop.subpop.0.species.segment.4.max-gene = 100
 
-pop.subpop.0.species.segment.5.min-gene = 5
-pop.subpop.0.species.segment.5.max-gene = 250
+pop.subpop.0.species.segment.5.min-gene = 0
+pop.subpop.0.species.segment.5.max-gene = 1
+pop.subpop.0.species.segment.5.mutation-bounded = true
 
-pop.subpop.0.species.segment.6.min-gene = 0
-pop.subpop.0.species.segment.6.max-gene = 25
-pop.subpop.0.species.segment.6.mutation-type = integer-random-walk
-pop.subpop.0.species.segment.6.random-walk-probability = 0.3
-pop.subpop.0.species.segment.6.mutation-bounded = true
+pop.subpop.0.species.segment.6.min-gene = 5
+pop.subpop.0.species.segment.6.max-gene = 250
 
-pop.subpop.0.species.segment.7.min-gene = 1
-pop.subpop.0.species.segment.7.max-gene = 5
+pop.subpop.0.species.segment.7.min-gene = 0
+pop.subpop.0.species.segment.7.max-gene = 25
 pop.subpop.0.species.segment.7.mutation-type = integer-random-walk
-pop.subpop.0.species.segment.7.random-walk-probability = 0.1
+pop.subpop.0.species.segment.7.random-walk-probability = 0.3
 pop.subpop.0.species.segment.7.mutation-bounded = true
+
+pop.subpop.0.species.segment.8.min-gene = 1
+pop.subpop.0.species.segment.8.max-gene = 5
+pop.subpop.0.species.segment.8.mutation-type = integer-random-walk
+pop.subpop.0.species.segment.8.random-walk-probability = 0.1
+pop.subpop.0.species.segment.8.mutation-bounded = true
 
 ####
 ####

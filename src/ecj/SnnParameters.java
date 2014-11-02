@@ -31,26 +31,27 @@ public class SnnParameters {
 	public float tau() {
 		return genes[6];
 	}
-	public float getConn1Prob() {
-		return 1;//genes[7];
-	}
-	public float getConn2Prob() {
-		return 1;//genes[8];
-	}
 	public float getGmax() {
 		return genes[7];
 	}
 	
-	public float getPopRateThresh(){
+	public float getConn1Prob() {
 		return genes[8];
+	}
+	public float getConn2Prob() {
+		return genes[9];
+	}
+	
+	public float getPopRateThresh(){
+		return genes[10];
 	}
 	
 	public float[] getClassTimesToThresh() {
-		float timeOffsetForClasses = genes[10];
+		float timeOffsetForClasses = genes[12];
 		return new float[] {
-							genes[9]+(0*timeOffsetForClasses),  
-							genes[9]+(1*timeOffsetForClasses), 
-							genes[9]+(2*timeOffsetForClasses)
+							genes[11]+(0*timeOffsetForClasses),  
+							genes[11]+(1*timeOffsetForClasses), 
+							genes[11]+(2*timeOffsetForClasses)
 							};
 	}
 	public SNN constructSnn(){
