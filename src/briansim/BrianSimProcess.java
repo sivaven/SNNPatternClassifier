@@ -36,7 +36,7 @@ public class BrianSimProcess {
 		this.debug = debug;
 	}
 	
-	public void runBrianSimSNN(String moduleName, boolean deleteModuleAfterRun){
+	public void runBrianSimSNN(String moduleName){
 		
 		List<String> command = new ArrayList<String>();
 		command.add("python");
@@ -62,15 +62,16 @@ public class BrianSimProcess {
 				}else{
 					break;
 				}	
-			}
-			if(deleteModuleAfterRun)
-				new File(moduleName).delete();
+			}			
 		} catch (IOException e) {
 			e.printStackTrace();
 		}	
 		processOutput(brianOutputAsString);
 	}
 
+	public void deleteModule(String moduleName) {
+		new File(moduleName).delete();
+	}
 	private void processOutput(String brianOutputAsString) {
 		StringTokenizer st = new StringTokenizer(brianOutputAsString, FF_PATTERN_DELIM);
 		while(st.hasMoreTokens()){
@@ -106,7 +107,7 @@ public class BrianSimProcess {
 		return (ArrayList<SpikeTimes>) brianPatternKeyOutputMap.get(patternKey).getItems().get(BrianOutputLabel.op_layer_spike_times);
 	}
 	
-	public ArrayList<Float> getOutputLayerPopRatesForPattern(Integer patternKey) {
+	public ArrayList<Float> getOutputLayerPopRatesForPattern(Integer patternKey) {		
 		if(!brianPatternKeyOutputMap.containsKey(patternKey)){
 			System.out.println("<getOutputLayerPopRatesForPattern> \tPattern key not returned from brianSim.\t"+patternKey);
 			displayBrianOutput();
@@ -121,6 +122,10 @@ public class BrianSimProcess {
 
 	public void setProcessDebug(boolean processDebug) {
 		this.processDebug = processDebug;
+	}
+	
+	public boolean isBrianOutputEmpty(){
+		return brianPatternKeyOutputMap.isEmpty();
 	}
 	
 }

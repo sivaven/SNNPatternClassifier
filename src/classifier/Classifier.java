@@ -84,7 +84,14 @@ public class Classifier {
 		 */
 		BrianSimProcess bsm = new BrianSimProcess();
 		String moduleName = bsm.buildPythonModule(snn.getParms(), doPlot);		
-		bsm.runBrianSimSNN(moduleName, deleteModuleAfterRun);	
+		bsm.runBrianSimSNN(moduleName);	
+		if(bsm.isBrianOutputEmpty()) {
+			System.out.println("Brian output empty for module.\t"+moduleName);				
+			System.exit(-1);			
+		}
+		if(deleteModuleAfterRun) {
+			bsm.deleteModule(moduleName);
+		}
 		//bsm.displayBrianOutput();
 		/*
 		 * evaluate
