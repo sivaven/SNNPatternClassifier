@@ -51,7 +51,7 @@ public class STDP {
 		*/
 		
 		ECJStarter.init();
-		ECJStarter.resampleDataSets();
+		
 		
 		float[] genes = new float[] {499.0f, 453.0f,
 				11.0f, 5.0f,
@@ -60,22 +60,21 @@ public class STDP {
 				7.0f, 
 				0.88080144f, 0.5963614f,
 				152.0f, 18.0f, 1.0f
-};
+		};
 				//{100, 3, 3, 0.1f, 0.1f, 100, 0.5f, 0.5f, 10};
-		SnnParameters snnParms = new SnnParameters(genes);
-		SNN snn = snnParms.constructSnn();
 		
-		float bin  = 1;
-		Decoder decoder = new Decoder(snnParms.getPopRateThresh(), bin, snnParms.getClassTimesToThresh());	       
-        Classifier cl = new Classifier(ECJStarter.encoder, decoder);			
-		cl.setSNN(snn);
-		cl.evalStatDisplay= false;
         /*
          * 
          */		
 		double time = System.currentTimeMillis();
 		for(int i=0;i<Integer.valueOf(args[0]);i++){
-		
+			ECJStarter.resampleDataSets();
+			SnnParameters snnParms = new SnnParameters(genes);		
+			Decoder decoder = new Decoder(snnParms.getPopRateThresh(), 1, snnParms.getClassTimesToThresh());	       
+	        Classifier cl = new Classifier(ECJStarter.encoder, decoder);			
+			cl.setSNN(snnParms.constructSnn());
+			cl.evalStatDisplay= false;
+			
 	        float score = cl.doStdpThenevaluate(ECJStarter.dataSetManager.getSampleEvaluationSet(ECJStarter.sampleEvalSetFrac)
 	        									, true,
 	        									false);
