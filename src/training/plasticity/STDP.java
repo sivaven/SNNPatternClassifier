@@ -53,31 +53,34 @@ public class STDP {
 		ECJStarter.init();
 		ECJStarter.resampleDataSets();
 		
-		float[] genes = new float[] {69, 
-				3.6461256f, 1.7008046f, 
-				0.19992998f, 0.10061691f,
-				375.65887f,
-				0.7567879f, 0.90344477f,
-				7.65136f};
+		float[] genes = new float[] {499.0f, 453.0f,
+				11.0f, 5.0f,
+				1.3580258f, 8.058138f, 
+				101.0f, 
+				7.0f, 
+				0.88080144f, 0.5963614f,
+				152.0f, 18.0f, 1.0f
+};
 				//{100, 3, 3, 0.1f, 0.1f, 100, 0.5f, 0.5f, 10};
 		SnnParameters snnParms = new SnnParameters(genes);
 		SNN snn = snnParms.constructSnn();
 		
-		float popRateThresh = 150;
 		float bin  = 1;
-		float[] classSpikeTimes = new float[] {18, 19, 20};
-		
-		Decoder decoder = new Decoder(popRateThresh, bin, classSpikeTimes);
-		Classifier cl = new Classifier(ECJStarter.encoder, decoder);			
+		Decoder decoder = new Decoder(snnParms.getPopRateThresh(), bin, snnParms.getClassTimesToThresh());	       
+        Classifier cl = new Classifier(ECJStarter.encoder, decoder);			
 		cl.setSNN(snn);
-		cl.evalStatDisplay= true;
+		cl.evalStatDisplay= false;
         /*
          * 
          */		
-        float score = cl.doStdpThenevaluate(ECJStarter.dataSetManager.getSampleEvaluationSet(ECJStarter.sampleEvalSetFrac)
-        									, false,
-        									false);
-        System.out.println("\n**Accuracy.\t"+score);
+		for(int i=0;i<Integer.valueOf(args[0]);i++){
+		
+	        float score = cl.doStdpThenevaluate(ECJStarter.dataSetManager.getSampleEvaluationSet(ECJStarter.sampleEvalSetFrac)
+	        									, false,
+	        									false);
+	        System.out.println("\n**Accuracy.\t"+score);
+    	
+		}
 	/*	BrianSimProcess bsm = new BrianSimProcess(snn);
 		double time = System.currentTimeMillis();
 		bsm.runBrianSimSNNArch1(true);
