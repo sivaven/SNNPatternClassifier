@@ -73,6 +73,7 @@ public class STDP {
         /*
          * 
          */		
+		double time = System.currentTimeMillis();
 		for(int i=0;i<Integer.valueOf(args[0]);i++){
 		
 	        float score = cl.doStdpThenevaluate(ECJStarter.dataSetManager.getSampleEvaluationSet(ECJStarter.sampleEvalSetFrac)
@@ -81,6 +82,8 @@ public class STDP {
 	        System.out.println("Accuracy.\t"+score);
     	
 		}
+		time = System.currentTimeMillis() - time;
+		System.out.println("Time taken.\t"+(time/1000)+" s.");
 	/*	BrianSimProcess bsm = new BrianSimProcess(snn);
 		double time = System.currentTimeMillis();
 		bsm.runBrianSimSNNArch1(true);
