@@ -76,9 +76,9 @@ public class STDP {
 		for(int i=0;i<Integer.valueOf(args[0]);i++){
 		
 	        float score = cl.doStdpThenevaluate(ECJStarter.dataSetManager.getSampleEvaluationSet(ECJStarter.sampleEvalSetFrac)
-	        									, false,
+	        									, true,
 	        									false);
-	        System.out.println("\n**Accuracy.\t"+score);
+	        System.out.println("Accuracy.\t"+score);
     	
 		}
 	/*	BrianSimProcess bsm = new BrianSimProcess(snn);

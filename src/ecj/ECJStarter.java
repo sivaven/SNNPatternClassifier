@@ -23,7 +23,7 @@ import ec.util.ParameterDatabase;
 public class ECJStarter {
 	private static float tSetFrac = 0.5f;  //(.1, .4) => n=15, 6
 	private static float fitSetFrac = 0.0f; // of tSet
-	public static float sampleEvalSetFrac = 0.4f; // of evalSet
+	public static float sampleEvalSetFrac = 1.0f; // of evalSet
 	
 	public static  DataSetManager dataSetManager;
 	public static Encoder encoder;
