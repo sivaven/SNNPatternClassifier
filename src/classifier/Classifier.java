@@ -13,6 +13,7 @@ import code.Decoder;
 import code.Encoder;
 import dataset.DataSet;
 import dataset.Pattern;
+import ecj.ECJStarter;
 
 public class Classifier {
 
@@ -61,6 +62,9 @@ public class Classifier {
 	public void setSNN(SNN snn){
 		this.snn = snn;
 	}
+	/*
+	 * version 1
+	 */
 	public float doStdpThenevaluate(Map<Integer, Pattern> ffSet, boolean deleteModuleAfterRun, boolean doPlot) {
 		/*
 		 * add remaining parms to snn, related to dataset
@@ -113,8 +117,57 @@ public class Classifier {
 		}	
 		return (1.0f*score)/(1.0f*ffSet.size());
 	}
+	
 	public float doStdpThenevaluate(Map<Integer, Pattern> ffSet) {
 		return doStdpThenevaluate(ffSet, true, false);
+	}
+	
+	/*
+	 * version 2
+	 */
+	public float doStdpThenevaluate(SpikeTimes[] stdpSpikeTimes, 
+			SpikeTimes[][] ffSpikeTimes, int[] ipPatternIdx, int[] patternClasses){
+		return doStdpThenevaluate(stdpSpikeTimes, 
+				ffSpikeTimes, ipPatternIdx, patternClasses,
+				true, false);
+	}
+	public float doStdpThenevaluate(SpikeTimes[] stdpSpikeTimes, 
+									SpikeTimes[][] ffSpikeTimes, int[] ipPatternIdx, int[] patternClasses,
+									boolean deleteModuleAfterRun, boolean doPlot) {
+		/*
+		 * add remaining parms to snn, related to dataset
+		 */
+		snn.addParameter(BrianSimParameterLabel.spike_times_iter_stdp, stdpSpikeTimes);			
+		snn.addParameter(BrianSimParameterLabel.spike_times_iter_ff3d, ffSpikeTimes);
+		snn.addParameter(BrianSimParameterLabel.ip_pattern_idx, ipPatternIdx);
+		/*
+		 * run brian sim process		
+		 */
+		BrianSimProcess bsm = new BrianSimProcess();
+		String moduleName = bsm.buildPythonModule(snn.getParms(), doPlot);		
+		bsm.runBrianSimSNN(moduleName);	
+		if(bsm.isBrianOutputEmpty()) {
+			System.out.println("Brian output empty for module.\t"+moduleName);				
+			System.exit(-1);			
+		}
+		if(deleteModuleAfterRun) {
+			bsm.deleteModule(moduleName);
+		}
+		//bsm.displayBrianOutput();
+		/*
+		 * evaluate
+		 */		
+		float score = 0;
+		for(int i=0;i<ipPatternIdx.length;i++){	        
+	        int classBySnn = decoder.decode(bsm.getOutputLayerPopRatesForPattern(ipPatternIdx[i]));	        
+	        if(patternClasses[i] == classBySnn){
+	        	score += 1;
+	        }
+	        if(evalStatDisplay) {
+	        	System.out.println("PatternKey\tClass\tClassBySNN.\t"+ipPatternIdx[i]+"\t"+patternClasses[i]+"\t"+classBySnn);
+	        }
+		}	
+		return (1.0f*score)/(1.0f*ipPatternIdx.length);
 	}
 	
 	public float evaluate(Map<Integer, Pattern> patternSet){
@@ -148,6 +201,14 @@ public class Classifier {
 		return (1.0f*score)/(1.0f*patternSet.size());
 	}
 	
+	public float twoFoldEvaluate() {
+		float acc0 = doStdpThenevaluate(ECJStarter.stdpSpikeTimes[0], 
+				ECJStarter.ffSpikeTimes[1], ECJStarter.ipPatternIdx[1], ECJStarter.patternClasses[1]);
+		float acc1 = doStdpThenevaluate(ECJStarter.stdpSpikeTimes[1], 
+				ECJStarter.ffSpikeTimes[0], ECJStarter.ipPatternIdx[0], ECJStarter.patternClasses[0]);
+		
+		return (acc0+acc1)/2.0f;
+	}
 	public int classify(ArrayList<Float> attributes){		
 		setInputLayerSpikeTimes(encoder.encode(attributes));		
 		ArrayList<SpikeTimes> opLayerSpikeTimes = null;//runSNNArch1();		

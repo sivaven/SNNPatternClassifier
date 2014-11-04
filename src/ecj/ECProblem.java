@@ -40,8 +40,9 @@ public class ECProblem extends Problem implements SimpleProblemForm{
 			cl.setSNN(snnParms.constructSnn());
 	        
 			
-	        fitness = cl.doStdpThenevaluate(ECJStarter.dataSetManager.getSampleEvaluationSet(ECJStarter.sampleEvalSetFrac));
-	       
+	  //      fitness = cl.doStdpThenevaluate(ECJStarter.dataSetManager.getSampleEvaluationSet(ECJStarter.sampleEvalSetFrac));
+			fitness = cl.twoFoldEvaluate();
+		       
 	       // System.out.println("evaluate");
 	        
 	        if (!(ind2.fitness instanceof SimpleFitness))

@@ -21,6 +21,42 @@ public class STDP {
 	public static final float conn2_init_weight = 5.0f;
 	
 	public static void main(String[] args) {
+		
+		ECJStarter.init();		
+		
+		float[] genes = new float[] {499.0f, 453.0f,
+				11.0f, 5.0f,
+				1.3580258f, 8.058138f, 
+				101.0f, 
+				7.0f, 
+				0.88080144f, 0.5963614f,
+				152.0f, 18.0f, 1.0f
+		};
+				//{100, 3, 3, 0.1f, 0.1f, 100, 0.5f, 0.5f, 10};
+		
+       	
+		double time = System.currentTimeMillis();
+		for(int i=0;i<Integer.valueOf(args[0]);i++){
+			ECJStarter.resampleDataSets();
+			SnnParameters snnParms = new SnnParameters(genes);		
+			Decoder decoder = new Decoder(snnParms.getPopRateThresh(), 1, snnParms.getClassTimesToThresh());	       
+	        Classifier cl = new Classifier(ECJStarter.encoder, decoder);			
+			cl.setSNN(snnParms.constructSnn());
+			cl.evalStatDisplay= false;
+			
+	        float score = cl.twoFoldEvaluate();
+	        		//cl.doStdpThenevaluate(ECJStarter.dataSetManager.getSampleEvaluationSet(ECJStarter.sampleEvalSetFrac)
+	        			//						, true,
+	        			//						false);
+	        System.out.println("Accuracy.\t"+score);
+    	
+		}
+		time = System.currentTimeMillis() - time;
+		System.out.println("Time taken.\t"+(time/1000)+" s.");
+
+	}
+	
+	public static void other(){
 		/*DataSet dataSet = new IrisDataset();
 		DataSetManager dm = new DataSetManager(dataSet);
 		dm.setDataSetPartitions(0.5f, 1);
@@ -50,40 +86,9 @@ public class STDP {
 		}		
 		*/
 		
-		ECJStarter.init();
 		
 		
-		float[] genes = new float[] {499.0f, 453.0f,
-				11.0f, 5.0f,
-				1.3580258f, 8.058138f, 
-				101.0f, 
-				7.0f, 
-				0.88080144f, 0.5963614f,
-				152.0f, 18.0f, 1.0f
-		};
-				//{100, 3, 3, 0.1f, 0.1f, 100, 0.5f, 0.5f, 10};
-		
-        /*
-         * 
-         */		
-		double time = System.currentTimeMillis();
-		for(int i=0;i<Integer.valueOf(args[0]);i++){
-			ECJStarter.resampleDataSets();
-			SnnParameters snnParms = new SnnParameters(genes);		
-			Decoder decoder = new Decoder(snnParms.getPopRateThresh(), 1, snnParms.getClassTimesToThresh());	       
-	        Classifier cl = new Classifier(ECJStarter.encoder, decoder);			
-			cl.setSNN(snnParms.constructSnn());
-			cl.evalStatDisplay= false;
-			
-	        float score = cl.doStdpThenevaluate(ECJStarter.dataSetManager.getSampleEvaluationSet(ECJStarter.sampleEvalSetFrac)
-	        									, true,
-	        									false);
-	        System.out.println("Accuracy.\t"+score);
-    	
-		}
-		time = System.currentTimeMillis() - time;
-		System.out.println("Time taken.\t"+(time/1000)+" s.");
-	/*	BrianSimProcess bsm = new BrianSimProcess(snn);
+		/*	BrianSimProcess bsm = new BrianSimProcess(snn);
 		double time = System.currentTimeMillis();
 		bsm.runBrianSimSNNArch1(true);
 		bsm.displayBrianOutput();

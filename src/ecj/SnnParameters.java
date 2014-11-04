@@ -75,7 +75,6 @@ public class SnnParameters {
 		snn.addParameter(BrianSimParameterLabel.sim_dur_stdp, (float)ECJStarter.dataSetManager.getTrainingSet().size()
 				*ECJStarter.PATTERN_WINDOW);
 		snn.addParameter(BrianSimParameterLabel.sim_dur_ff, ECJStarter.FF_SIM_DUR);
-		snn.addParameter(BrianSimParameterLabel.spike_times_iter_stdp, ECJStarter.stdpSpikeTimes);		
 		
 		return snn;
 	}
