@@ -137,7 +137,7 @@ public class Classifier {
 		/*
 		 * add remaining parms to snn, related to dataset
 		 */
-		System.out.println(stdpSpikeTimes.length);
+		//System.out.println(stdpSpikeTimes.length);
 		snn.addParameter(BrianSimParameterLabel.spike_times_iter_stdp, stdpSpikeTimes);			
 		snn.addParameter(BrianSimParameterLabel.spike_times_iter_ff3d, ffSpikeTimes);
 		snn.addParameter(BrianSimParameterLabel.ip_pattern_idx, ipPatternIdx);
