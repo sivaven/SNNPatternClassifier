@@ -63,8 +63,8 @@ pop.subpop.0.species.segment.7.start = 11
 pop.subpop.0.species.segment.8.start = 12
 
 ##
-pop.subpop.0.species.segment.0.min-gene = 50
-pop.subpop.0.species.segment.0.max-gene = 500
+pop.subpop.0.species.segment.0.min-gene = 5
+pop.subpop.0.species.segment.0.max-gene = 100
 pop.subpop.0.species.segment.0.mutation-type = integer-random-walk
 pop.subpop.0.species.segment.0.random-walk-probability = 0.3
 pop.subpop.0.species.segment.0.mutation-bounded = true
