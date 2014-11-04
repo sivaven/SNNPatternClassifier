@@ -36,8 +36,8 @@ public class STDP {
 		
        	
 		double time = System.currentTimeMillis();
-		for(int i=0;i<Integer.valueOf(args[0]);i++){
-			ECJStarter.resampleDataSets();
+		for(int i=0;i<1;i++){
+		//	ECJStarter.resampleDataSets();
 			SnnParameters snnParms = new SnnParameters(genes);		
 			Decoder decoder = new Decoder(snnParms.getPopRateThresh(), 1, snnParms.getClassTimesToThresh());	       
 	        Classifier cl = new Classifier(ECJStarter.encoder, decoder);			
