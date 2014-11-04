@@ -56,10 +56,10 @@ public class ECJStarter {
 		ipPatternIdx = new int[n_fold][];
 		patternClasses = new int[n_fold][];
 		
-		initStdpSpikeTimes(stdpSpikeTimes[0], dataSetManager.getTrainingSet());
-		initStdpSpikeTimes(stdpSpikeTimes[1], dataSetManager.getEvaluationSet());
-		initFfSpikeTimes(ffSpikeTimes[0], ipPatternIdx[0], patternClasses[0], dataSetManager.getTrainingSet());
-		initFfSpikeTimes(ffSpikeTimes[1], ipPatternIdx[1], patternClasses[1], dataSetManager.getEvaluationSet());		
+		initStdpSpikeTimes(dataSetManager.getTrainingSet(), 0);
+		initStdpSpikeTimes(dataSetManager.getEvaluationSet(), 1);
+		initFfSpikeTimes(dataSetManager.getTrainingSet(), 0);
+		initFfSpikeTimes(dataSetManager.getEvaluationSet(), 1);		
 	}
 	
 	public static void resampleDataSets() {		
@@ -68,23 +68,23 @@ public class ECJStarter {
 		DataSet.shuffleMap(dataSetManager.getEvaluationSet());
 	}
 	
-	public static void initStdpSpikeTimes(SpikeTimes[] stdpSpikeTimes, Map<Integer, Pattern> set) {
-		stdpSpikeTimes = encoder.encode(set, PATTERN_WINDOW);
+	public static void initStdpSpikeTimes(Map<Integer, Pattern> set, int setIdx) {
+		stdpSpikeTimes[setIdx] = encoder.encode(set, PATTERN_WINDOW);
 	}
 	
-	public static void initFfSpikeTimes(SpikeTimes[][] ffSpikeTimes, int[] ipPatternIdx, int[] patternClasses,
-							Map<Integer, Pattern> set){
-		ffSpikeTimes = new SpikeTimes[set.size()][];
-		ipPatternIdx = new int[set.size()];		
+	public static void initFfSpikeTimes(Map<Integer, Pattern> set, int setIdx){
+		ffSpikeTimes[setIdx] = new SpikeTimes[set.size()][];
+		ipPatternIdx[setIdx] = new int[set.size()];		
+		patternClasses[setIdx] = new int[set.size()];
 		Iterator it = set.entrySet().iterator();
 		int i=0;
 		while (it.hasNext()) {
 	        Map.Entry pairs = (Map.Entry)it.next();
 	        Integer key = (Integer) pairs.getKey();
 	        Pattern pattern = (Pattern) pairs.getValue();	       
-	        ffSpikeTimes[i] = encoder.encode(pattern.getAttributes());
-	        ipPatternIdx[i] = key;
-	        patternClasses[i++]=pattern.get_class().getNumericClass();
+	        ffSpikeTimes[setIdx][i] = encoder.encode(pattern.getAttributes());
+	        ipPatternIdx[setIdx][i] = key;
+	        patternClasses[setIdx][i++]=pattern.get_class().getNumericClass();
 		}			
 	}
 	public static void main(String[] args) {

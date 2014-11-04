@@ -325,7 +325,7 @@ public class BriansimPythonBuilder {
 		if(obj instanceof SpikeTimes[][]){
 			return convertToString((SpikeTimes[][])obj);
 		}
-		System.out.println("No object instances matched!! BrianSimPythonBuilder.java");
+		System.out.println("No object instances matched!! BrianSimPythonBuilder.java.\t"+parm);
 		return null;
 	}
 	public static void main(String[] args) {
