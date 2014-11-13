@@ -32,11 +32,28 @@ public class STDP {
 				0.88080144f, 0.5963614f,
 				152.0f, 18.0f, 1.0f
 		};
+		genes = new float[] {72.0f, 83.0f,
+				5.0f, 8.0f,
+				3.7924376f, 2.8046827f,
+				10.0f,
+				20.0f,
+				0.25669977f, 0.24825996f, 
+				142.0f, 17.0f, 1.0f
+
+		}; 
+		genes = new float[] {26, 99, 
+			22, 7,
+			9.600343f, 13.661923f,
+			188.0f,
+			14.0f,
+			0.53445536f, 0.24563898f,
+			150.0f, 18.0f, 1.0f
+};
 				//{100, 3, 3, 0.1f, 0.1f, 100, 0.5f, 0.5f, 10};
 		
        	
 		double time = System.currentTimeMillis();
-		for(int i=0;i<1;i++){
+		for(int i=0;i<5;i++){
 		//	ECJStarter.resampleDataSets();
 			SnnParameters snnParms = new SnnParameters(genes);		
 			Decoder decoder = new Decoder(snnParms.getPopRateThresh(), 1, snnParms.getClassTimesToThresh());	       
