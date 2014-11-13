@@ -126,6 +126,10 @@ pop.subpop.0.species.pipe.source.0.source.1	= ec.select.TournamentSelection
 #
 #
 eval.problem		= ecj.ECProblem
+eval.masterproblem = ec.eval.MasterProblem
+eval.masterproblem.max-jobs-per-slave = 3
+eval.master.port = 15000
+
 eval.master.host = node03
 eval.return-inds=false
 eval.slave.one-shot = false
