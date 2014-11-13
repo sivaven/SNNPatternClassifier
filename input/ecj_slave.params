@@ -126,6 +126,6 @@ pop.subpop.0.species.pipe.source.0.source.1	= ec.select.TournamentSelection
 #
 #
 eval.problem		= ecj.ECProblem
-eval.master.host = localhost
+eval.master.host = node05
 eval.return-inds=false
 eval.slave.one-shot = false
