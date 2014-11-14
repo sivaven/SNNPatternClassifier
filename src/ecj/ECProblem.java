@@ -33,7 +33,7 @@ public class ECProblem extends Problem implements SimpleProblemForm{
 			Decoder decoder = new Decoder(snnParms.getPopRateThresh(), bin, snnParms.getClassTimesToThresh());	       
 	        Classifier cl = new Classifier(ECJStarter.encoder, decoder);		        
 	        cl.evalStatDetailDisplay =false;
-	       // cl.setDebug(true);
+	        cl.setDebug(false);
 	        /*
 	         * then setup snn parmaeters
 	         */
@@ -43,7 +43,7 @@ public class ECProblem extends Problem implements SimpleProblemForm{
 	  //      fitness = cl.doStdpThenevaluate(ECJStarter.dataSetManager.getSampleEvaluationSet(ECJStarter.sampleEvalSetFrac));
 			fitness = cl.twoFoldEvaluate();
 		       
-	       // System.out.println("evaluate");
+	//        System.out.println("evaluate");
 	        
 	        if (!(ind2.fitness instanceof SimpleFitness))
 	            state.output.fatal("Whoa!  It's not a SimpleFitness!!!",null);

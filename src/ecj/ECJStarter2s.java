@@ -3,12 +3,12 @@ package ecj;
 import ec.Evolve;
 import ec.eval.Slave;
 
-public class ECJStarter2 {
+public class ECJStarter2s {
 	public static void main(final String[] args) {
         assert (args != null);
         
         ECJStarter.init();
-       
+        
         if (args.length > 0 && args[0].equals("--slave"))
             Slave.main(tail(args));
         else
