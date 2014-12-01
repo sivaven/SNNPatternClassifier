@@ -23,10 +23,10 @@ public class SnnParameters {
 		return genes[3];
 	}	
 	public float getA_1() {
-		return genes[4];
+		return 1;
 	}
 	public float getA_2() {
-		return genes[5];
+		return 1;
 	}
 	public float tau() {
 		return genes[6];
@@ -54,6 +54,10 @@ public class SnnParameters {
 							genes[11]+(2*timeOffsetForClasses)
 							};
 	}
+	
+	public float getEta(){
+		return genes[13];
+	}
 	public SNN constructSnn(){
 		/*
 		 * add EA parms to SNN
@@ -63,6 +67,7 @@ public class SnnParameters {
 		snn.addParameter(BrianSimParameterLabel.conn2_init_weight, getConn2InitWeight());
 		snn.addParameter(BrianSimParameterLabel.stdp1_a_step, getA_1());
 		snn.addParameter(BrianSimParameterLabel.stdp2_a_step, getA_2());
+		snn.addParameter(BrianSimParameterLabel.eta, getEta());
 		snn.addParameter(BrianSimParameterLabel.stdp_tau, tau());
 		snn.addParameter(BrianSimParameterLabel.conn1_prob, getConn1Prob());
 		snn.addParameter(BrianSimParameterLabel.conn2_prob, getConn2Prob());

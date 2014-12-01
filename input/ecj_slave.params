@@ -1,5 +1,5 @@
 parent.0=ecj_master.params
 
-eval.master.host = node03
+eval.master.host = node02
 eval.return-inds=false
 eval.slave.one-shot = false

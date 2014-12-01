@@ -108,11 +108,11 @@ public class BriansimPythonBuilder {
 	void writeSTDP(){
 		writeLnToModule("tau = "+BrianSimParameterLabel.stdp_tau+"*ms");
 		writeLnToModule("stdp1=STDP(conn1,eqs=eqs_stdp,"
-				+ "pre='A_pre+="+BrianSimParameterLabel.stdp1_a_step+"*mV;w+=A_post',"
-				+ "post='A_post+="+BrianSimParameterLabel.stdp1_a_step+"*mV;w+=A_pre',wmax="+BrianSimParameterLabel.stdp_gmax+"*mV, clock=simclock)");
+				+ "pre='A_pre+="+BrianSimParameterLabel.stdp1_a_step+"*mV;w+=A_post*eta',"
+				+ "post='A_post+="+BrianSimParameterLabel.stdp1_a_step+"*mV;w+=A_pre*eta',wmax="+BrianSimParameterLabel.stdp_gmax+"*mV, clock=simclock)");
 		writeLnToModule("stdp2=STDP(conn2,eqs=eqs_stdp,"
-				+ "pre='A_pre+="+BrianSimParameterLabel.stdp2_a_step+"*mV;w+=A_post',"
-				+ "post='A_post+="+BrianSimParameterLabel.stdp2_a_step+"*mV;w+=A_pre',wmax="+BrianSimParameterLabel.stdp_gmax+"*mV, clock=simclock)");
+				+ "pre='A_pre+="+BrianSimParameterLabel.stdp2_a_step+"*mV;w+=A_post*eta',"
+				+ "post='A_post+="+BrianSimParameterLabel.stdp2_a_step+"*mV;w+=A_pre*eta',wmax="+BrianSimParameterLabel.stdp_gmax+"*mV, clock=simclock)");
 	}
 	void writeMonitors(){
 	//	writeLnToModule("SMO = SpikeMonitor(outputLayer)");
