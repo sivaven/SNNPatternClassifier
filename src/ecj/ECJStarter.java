@@ -88,7 +88,7 @@ public class ECJStarter {
 		}			
 	}
 	public static void main(String[] args) {
-		String parmsFile = "input/ecj3.params";	
+		String parmsFile = "input/ecj_dist.params";	
 		init();		
 						
 	//	FileUtils.writeSummaryln("tSetKeys:"+dataSetManager.getTrainingSet().keySet().toString());
