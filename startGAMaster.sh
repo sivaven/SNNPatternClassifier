@@ -1,4 +1,5 @@
 #!/bin/bash
+export set JAVA_OPTS="-XX:+AggressiveHeap"
 export CLASSPATH="src:bin:lib/*"
 module load python-2.7
 module load OpenBLAS
