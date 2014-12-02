@@ -98,10 +98,10 @@ pop.subpop.0.species.segment.5.mutation-stdev = 0.2
 pop.subpop.0.species.segment.5.mutation-prob = 0.1	
 pop.subpop.0.species.segment.5.mutation-bounded = true
 
-pop.subpop.0.species.segment.6.min-gene = 500
-pop.subpop.0.species.segment.6.max-gene = 10000
+pop.subpop.0.species.segment.6.min-gene = 1000
+pop.subpop.0.species.segment.6.max-gene = 3000
 pop.subpop.0.species.segment.6.mutation-type = integer-random-walk
-pop.subpop.0.species.segment.6.random-walk-probability = 0.8
+pop.subpop.0.species.segment.6.random-walk-probability = 0.5
 pop.subpop.0.species.segment.6.mutation-bounded = false
 
 pop.subpop.0.species.segment.7.min-gene = 15
