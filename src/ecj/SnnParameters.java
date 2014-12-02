@@ -4,7 +4,7 @@ import briansim.BrianSimParameterLabel;
 import snn.SNN;
 
 public class SnnParameters {
-	private static final float dt_ = 1.0f;
+	public static final float dt_ = 0.1f;
 	//private static final float stdp_gmax = 100.0f;
 	
 	float[] genes;
@@ -14,7 +14,7 @@ public class SnnParameters {
 	}
 	
 	public int[] getNwArch() {
-		return new int[] {32, (int)genes[0], (int)genes[1]};
+		return new int[] {ECJStarter.nRF*ECJStarter.dataSetManager.dataSet.getnAttr(), (int)genes[0], (int)genes[1]};
 	}
 	public float getConn1InitWeight() {
 		return genes[2];
@@ -78,7 +78,7 @@ public class SnnParameters {
 		snn.addParameter(BrianSimParameterLabel.dt_, dt_);
 		
 		snn.addParameter(BrianSimParameterLabel.sim_dur_stdp, (float)ECJStarter.dataSetManager.getTrainingSet().size()
-				*ECJStarter.PATTERN_WINDOW);
+				*ECJStarter.PATTERN_WINDOW*ECJStarter.stdp_iter);
 		snn.addParameter(BrianSimParameterLabel.sim_dur_ff, ECJStarter.FF_SIM_DUR);
 		
 		return snn;

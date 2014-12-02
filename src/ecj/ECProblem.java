@@ -29,8 +29,8 @@ public class ECProblem extends Problem implements SimpleProblemForm{
 	        /*
 	         * first setup decoder from genes
 	         */	     
-			float bin  = 1;
-			Decoder decoder = new Decoder(snnParms.getPopRateThresh(), bin, snnParms.getClassTimesToThresh());	       
+			
+			Decoder decoder = new Decoder(snnParms.getPopRateThresh(), SnnParameters.dt_, snnParms.getClassTimesToThresh());	       
 	        Classifier cl = new Classifier(ECJStarter.encoder, decoder);		        
 	        cl.evalStatDetailDisplay =false;
 	        cl.setDebug(false);

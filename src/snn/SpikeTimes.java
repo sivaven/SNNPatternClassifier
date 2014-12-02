@@ -53,6 +53,6 @@ public class SpikeTimes {
 			System.out.print(",");
 		}
 		System.out.print("]\n");*/
-		System.out.println(spikeTimes);
+		System.out.print(spikeTimes);
 	}
 }

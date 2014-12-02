@@ -20,6 +20,7 @@ public class Encoder {
 	DataSet dataSet;
 	GaussianRF[][] rf;
 	int nRFs;
+	float imaginaryTime;
 	
 	public Encoder(DataSet dataset, int nRFs, float beta){
 		dataSet = dataset;
@@ -34,6 +35,7 @@ public class Encoder {
 				float sigma = (nRFs-2)/(beta * (attrMax[i] - attrMin[i]));
 				rf[i][m] = new GaussianRF(mu, sigma);
 			}
+		imaginaryTime = dataSet.getPatternSet().size()*ECJStarter.PATTERN_WINDOW*ECJStarter.stdp_iter+1000;
 	}
 	
 	public Encoder(DataSet dataset, int nRFs){
@@ -78,6 +80,34 @@ public class Encoder {
 			
 		return ipLayerSpikeTimes;
 		}
+	 
+	 public SpikeTimes[] encode(Map<Integer, Pattern> patternSet, float timeInterval, int iterations){	
+		 SpikeTimes[] ipLayerSpikeTimes = new SpikeTimes[dataSet.getnAttr()*this.nRFs];		 
+		 float timeOffset = 0;
+		 int patternCnt = 0;
+		 for(int iter=0;iter<iterations;iter++) {
+			 Iterator it = patternSet.entrySet().iterator();			 
+			 while (it.hasNext()) {
+		        Map.Entry pairs = (Map.Entry)it.next();
+		        Pattern pattern = (Pattern) pairs.getValue();
+		        for(int i=0;i<pattern.getAttributes().size();i++){
+					for(int j=0;j<this.nRFs;j++){
+						if(patternCnt==0) {
+							ipLayerSpikeTimes[(i*this.nRFs)+j] = new SpikeTimes();
+						}
+						float spikeTime = getSpikeTimeFromRFCode( this.rf[i][j].phi(pattern.getAttributes().get(i)) );
+						ipLayerSpikeTimes[(i*this.nRFs)+j].addSpikeTime(spikeTime+timeOffset);					
+					}		
+				} 
+		        timeOffset += timeInterval;
+		        patternCnt+=1;
+		   //     System.out.println(patternCnt+"\t"+timeOffset);
+			 }	
+		 } 		
+			
+		return ipLayerSpikeTimes;
+		}
+	 
 	/*
 	 * rfCode = 1 => spikeTime = 0 (no delay)
 	 * rfCode = 0 => spikeTime = 10
@@ -85,7 +115,7 @@ public class Encoder {
 	public float getSpikeTimeFromRFCode(float rfCode){
 		float spikeTime = Math.round((1-rfCode)*ECJStarter.PATTERN_WINDOW);
 		if(spikeTime > 18) 
-			spikeTime = 10000;
+			spikeTime = imaginaryTime;
 		return spikeTime;
 	}
 	public void displayRFmus(){
@@ -148,7 +178,7 @@ public class Encoder {
 		SpikeTimes[] times = encoder.encode(testpattern, 0);
 		//for(SpikeTimes st: times)
 		//st.display();
-			for(int i=0;i<8;i++)
+			for(int i=0;i<33;i++)
 				times[i].display();
 			
 	}

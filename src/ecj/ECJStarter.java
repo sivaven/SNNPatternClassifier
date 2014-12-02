@@ -33,6 +33,7 @@ public class ECJStarter {
 	 * for a two-fold x validation
 	 */
 	private static int n_fold=2;
+	public static final int stdp_iter = 1;
 	public static SpikeTimes[][] stdpSpikeTimes;
 	public static SpikeTimes[][][] ffSpikeTimes;
 	public static int[][] ipPatternIdx;
@@ -40,11 +41,12 @@ public class ECJStarter {
 	
 	public static final float PATTERN_WINDOW = 20;
 	public static final float FF_SIM_DUR = 50;
+	public static final int nRF = 8;
 	//public static int[] nNeurons = new int[] {32, 15, 3};
 	
 	public static void init() {
 		DataSet dataSet = new IrisDataset();		
-		encoder = new Encoder(dataSet, 8);		
+		encoder = new Encoder(dataSet, nRF);		
 		dataSetManager = new DataSetManager(dataSet);
 		resampleDataSets();
 		
@@ -69,7 +71,7 @@ public class ECJStarter {
 	}
 	
 	public static void initStdpSpikeTimes(Map<Integer, Pattern> set, int setIdx) {
-		stdpSpikeTimes[setIdx] = encoder.encode(set, PATTERN_WINDOW);
+		stdpSpikeTimes[setIdx] = encoder.encode(set, PATTERN_WINDOW, stdp_iter);
 	}
 	
 	public static void initFfSpikeTimes(Map<Integer, Pattern> set, int setIdx){

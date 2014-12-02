@@ -1,8 +1,13 @@
 package training.plasticity;
 
+import java.util.ArrayList;
+import java.util.Map;
+
 import snn.SNN;
+import snn.SpikeTimes;
 import classifier.Classifier;
 import code.Decoder;
+import dataset.Pattern;
 import ecj.ECJStarter;
 import ecj.SnnParameters;
 
@@ -49,14 +54,28 @@ public class STDP {
 			0.53445536f, 0.24563898f,
 			150.0f, 18.0f, 1.0f, 10
 };
-				//{100, 3, 3, 0.1f, 0.1f, 100, 0.5f, 0.5f, 10};
+		genes = new float[] {61.0f, 99.0f,
+		9.0f, 8.0f, 1.9465299f, -2.9970865f, 500.0f, 10.0f, 0.5762958f, 0.3920475f, 148.0f, 18.0f, 1.0f, 2.076338f};
+
 		
        	
 		double time = System.currentTimeMillis();
+		Map<Integer, Pattern> trainingSet = ECJStarter.dataSetManager.getTrainingSet();
+		
+		SpikeTimes[] spikeTimes = ECJStarter.encoder.encode(trainingSet, ECJStarter.PATTERN_WINDOW, ECJStarter.stdp_iter);
+		
+		for(int i=0;i<spikeTimes.length;i++){
+			if(i==0) System.out.print("[");
+			spikeTimes[i].display();
+			if(i==spikeTimes.length-1) System.out.print("]");
+			else System.out.print(",");
+			
+		}
+		System.out.println();
 		for(int i=0;i<5;i++){
 		//	ECJStarter.resampleDataSets();
 			SnnParameters snnParms = new SnnParameters(genes);		
-			Decoder decoder = new Decoder(snnParms.getPopRateThresh(), 1, snnParms.getClassTimesToThresh());	       
+			Decoder decoder = new Decoder(snnParms.getPopRateThresh(), SnnParameters.dt_, snnParms.getClassTimesToThresh());	       
 	        Classifier cl = new Classifier(ECJStarter.encoder, decoder);			
 			cl.setSNN(snnParms.constructSnn());
 			cl.evalStatDisplay= false;
@@ -69,7 +88,7 @@ public class STDP {
     	
 		}
 		time = System.currentTimeMillis() - time;
-		System.out.println("Time taken.\t"+(time/1000)+" s.");
+	//	System.out.println("Time taken.\t"+(time/1000)+" s.");
 
 	}
 	
