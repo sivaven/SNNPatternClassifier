@@ -47,7 +47,7 @@ public class SnnParameters {
 	}
 	
 	public float[] getClassTimesToThresh() {
-		float timeOffsetForClasses = genes[12];
+		float timeOffsetForClasses = 1;//genes[12];
 		return new float[] {
 							genes[11]+(0*timeOffsetForClasses),  
 							genes[11]+(1*timeOffsetForClasses), 

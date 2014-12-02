@@ -116,7 +116,7 @@ public class BriansimPythonBuilder {
 	}
 	void writeMonitors(){
 	//	writeLnToModule("SMO = SpikeMonitor(outputLayer)");
-		writeLnToModule("Mpr = PopulationRateMonitor(outputLayer, bin=1*ms)");
+		writeLnToModule("Mpr = PopulationRateMonitor(outputLayer, bin="+BrianSimParameterLabel.dt_+"*ms)");
 		writeLnToModule("");
 		if(plot){
 			writeLnToModule("SMI = SpikeMonitor(inputLayer)");

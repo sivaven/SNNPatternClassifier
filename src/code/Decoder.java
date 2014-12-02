@@ -30,15 +30,17 @@ public class Decoder {
 	
 	private static final float ACCEPTANCE = 0.1f;
 	private int interpretClassByPreciseTime(float time) {
+		float time2 = (float)(int)time;
 		for(int i=0;i<classSpikeTimes.length;i++) {
-			if(Utils.isCloseEnough(time, classSpikeTimes[i], ACCEPTANCE)){
+			if(Utils.isCloseEnough(time2, classSpikeTimes[i], ACCEPTANCE)){
 				return i;
 			}
 		}
 		return -1;
 	}
 	public static void main(String[] args) {
-		// TODO Auto-generated method stub
+		float f = 17.9f;
+		
 
 	}
 
