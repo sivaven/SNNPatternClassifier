@@ -74,13 +74,13 @@ public class STDP {
 			
 		}*/
 		
-		for(int x=1;x<=10;x++) {
+		for(int x=1;x<=Integer.parseInt(args[0]);x++) {
 			double time = System.currentTimeMillis();
 			System.out.println("\nSTDP iterations:-- " + x);
 			ECJStarter.stdp_iter = x;
 			ECJStarter.init();
 			
-			int nTrials = 3;
+			int nTrials = 10;
 			float[] accs = new float[nTrials];
 			for(int i=0;i<nTrials;i++){				
 				SnnParameters snnParms = new SnnParameters(genes);		
