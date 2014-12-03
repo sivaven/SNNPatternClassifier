@@ -5,6 +5,7 @@ import java.util.Map;
 
 import snn.SNN;
 import snn.SpikeTimes;
+import utils.Utils;
 import classifier.Classifier;
 import code.Decoder;
 import dataset.Pattern;
@@ -35,8 +36,9 @@ public class STDP {
 				101.0f, 
 				7.0f, 
 				0.88080144f, 0.5963614f,
-				152.0f, 18.0f, 1.0f
+				152.0f, 18.0f, 1.0f, 2.076338f
 		};
+		
 		genes = new float[] {72.0f, 83.0f,
 				5.0f, 8.0f,
 				3.7924376f, 2.8046827f,
@@ -55,12 +57,12 @@ public class STDP {
 			150.0f, 18.0f, 1.0f, 10
 };
 		genes = new float[] {61.0f, 99.0f,
-		9.0f, 8.0f, 1.9465299f, -2.9970865f, 500.0f, 10.0f, 0.5762958f, 0.3920475f, 1500.0f, 16.0f, 1.0f, 2.076338f};
+		9.0f, 8.0f, 1.9465299f, -2.9970865f, 500.0f, 10.0f, 0.5762958f, 0.3920475f, 148.0f, 18.0f, 1.0f, 2.076338f};
 
 		
-       	
-		double time = System.currentTimeMillis();
-		Map<Integer, Pattern> trainingSet = ECJStarter.dataSetManager.getTrainingSet();
+     	
+		
+		  /*	Map<Integer, Pattern> trainingSet = ECJStarter.dataSetManager.getTrainingSet();
 		
 		SpikeTimes[] spikeTimes = ECJStarter.encoder.encode(trainingSet, ECJStarter.PATTERN_WINDOW, ECJStarter.stdp_iter);
 		
@@ -70,25 +72,36 @@ public class STDP {
 			if(i==spikeTimes.length-1) System.out.print("]");
 			else System.out.print(",");
 			
+		}*/
+		
+		for(int x=1;x<=10;x++) {
+			double time = System.currentTimeMillis();
+			System.out.println("\nSTDP iterations:-- " + x);
+			ECJStarter.stdp_iter = x;
+			ECJStarter.init();
+			
+			int nTrials = 3;
+			float[] accs = new float[nTrials];
+			for(int i=0;i<nTrials;i++){				
+				SnnParameters snnParms = new SnnParameters(genes);		
+				Decoder decoder = new Decoder(snnParms.getPopRateThresh(), SnnParameters.dt_, snnParms.getClassTimesToThresh());	       
+		        Classifier cl = new Classifier(ECJStarter.encoder, decoder);			
+				cl.setSNN(snnParms.constructSnn());
+				cl.evalStatDisplay= false;
+				
+				accs[i] = cl.twoFoldEvaluate();
+		        		//cl.doStdpThenevaluate(ECJStarter.dataSetManager.getSampleEvaluationSet(ECJStarter.sampleEvalSetFrac)
+		        			//						, true,
+		        			//						false);
+		        System.out.println("Accuracy.\t"+accs[i]);	    	
+			}
+			System.out.println("**Average.\t"+Utils.calculateMean(accs)+"\tSTD.\t"+Utils.calculateStdDev(accs));
+			time = System.currentTimeMillis() - time;
+			System.out.println("Time taken.\t"+(time/1000)+" s.");
 		}
 		System.out.println();
-		for(int i=0;i<1;i++){
-		//	ECJStarter.resampleDataSets();
-			SnnParameters snnParms = new SnnParameters(genes);		
-			Decoder decoder = new Decoder(snnParms.getPopRateThresh(), SnnParameters.dt_, snnParms.getClassTimesToThresh());	       
-	        Classifier cl = new Classifier(ECJStarter.encoder, decoder);			
-			cl.setSNN(snnParms.constructSnn());
-			cl.evalStatDisplay= false;
-			
-	        float score = cl.twoFoldEvaluate();
-	        		//cl.doStdpThenevaluate(ECJStarter.dataSetManager.getSampleEvaluationSet(ECJStarter.sampleEvalSetFrac)
-	        			//						, true,
-	        			//						false);
-	        System.out.println("Accuracy.\t"+score);
-    	
-		}
-		time = System.currentTimeMillis() - time;
-	//	System.out.println("Time taken.\t"+(time/1000)+" s.");
+		
+	
 
 	}
 	

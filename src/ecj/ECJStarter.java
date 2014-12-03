@@ -33,7 +33,7 @@ public class ECJStarter {
 	 * for a two-fold x validation
 	 */
 	private static int n_fold=2;
-	public static final int stdp_iter = 1;
+	public static  int stdp_iter=1;
 	public static SpikeTimes[][] stdpSpikeTimes;
 	public static SpikeTimes[][][] ffSpikeTimes;
 	public static int[][] ipPatternIdx;

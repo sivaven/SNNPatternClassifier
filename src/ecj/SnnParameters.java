@@ -4,7 +4,7 @@ import briansim.BrianSimParameterLabel;
 import snn.SNN;
 
 public class SnnParameters {
-	public static final float dt_ = 0.1f;
+	public static final float dt_ = 1f;
 	//private static final float stdp_gmax = 100.0f;
 	
 	float[] genes;
