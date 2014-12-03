@@ -60,7 +60,10 @@ public class STDP {
 		9.0f, 8.0f, 1.9465299f, -2.9970865f, 500.0f, 10.0f, 0.5762958f, 0.3920475f, 148.0f, 18.0f, 1.0f, 2.076338f};
 
 		
-     	
+     	genes = new float[] {75.0f, 69.0f,
+     			9.0f, 3.0f, -0.94343793f, 6.447515f, 95.0f, 18.0f, 
+     			0.26869082f, 0.9458033f, 1770.0f, 15.048932f, 1.5164207f, 4.825826f
+};
 		
 		  /*	Map<Integer, Pattern> trainingSet = ECJStarter.dataSetManager.getTrainingSet();
 		
@@ -74,7 +77,7 @@ public class STDP {
 			
 		}*/
 		
-		for(int x=1;x<=Integer.parseInt(args[0]);x++) {
+		for(int x=1;x<=1;x++) {
 			double time = System.currentTimeMillis();
 			System.out.println("\nSTDP iterations:-- " + x);
 			ECJStarter.stdp_iter = x;
